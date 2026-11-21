@@ -10,8 +10,8 @@ export default function Home() {
       <section className="hero shell" aria-labelledby="hero-title">
         <Image
           className="hero-photo"
-          src="/demo/style-editorial.webp"
-          alt="Dua orang dengan padu padan denim, kemeja, dan celana bahan"
+          src="/demo/campus-sunshower.webp"
+          alt="Dua orang dengan padu padan jaket biru dan kemeja kotak-kotak berjalan di tengah hujan ringan"
           width={1536}
           height={1024}
           preload

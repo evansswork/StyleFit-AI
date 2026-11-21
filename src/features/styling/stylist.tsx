@@ -146,7 +146,7 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
           </div>}
           <div id="outfit-preview" aria-live="polite">
             {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview">
-              <Image src="/demo/style-editorial.webp" alt="" width={1536} height={1024} unoptimized />
+              <Image src="/demo/campus-sunshower.webp" alt="" width={1536} height={1024} unoptimized />
               <figcaption>Inspirasi gaya</figcaption>
             </figure>}
           </div>

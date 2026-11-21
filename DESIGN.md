@@ -4,9 +4,9 @@
 
 StyleFit memakai tampilan editorial fashion yang menonjolkan pakaian dan keputusan pengguna. Produk terasa personal, jelas, dan ringan untuk HP. Bahasa antarmuka adalah Bahasa Indonesia yang singkat dan tidak menghakimi bentuk tubuh.
 
-Palet memakai latar gading `#F8F6EF`, permukaan `#FFFEFA`, teks `#232820`, dan aksen hijau tua `#344A37`. Batas kontrol memakai `#787C70`. Gunakan aksen yang sama di landing dan stylist, dengan teks putih pada tombol utama dan indikator fokus yang terlihat.
+Palet terinspirasi suasana hujan dan matahari pada [Sunshine Through the Rain](https://www.netflix.com/id-en/title/83112494). Gunakan biru kabut `#EFF3F7` untuk latar, putih hangat `#FFFDF8` untuk permukaan, dan biru gelap `#2C4B68` untuk kontrol aktif. Kuning madu `#FFDA91` muncul di judul dan tombol utama hero. Jaga kontras teks dan indikator fokus di atas foto.
 
-Judul utama memakai Georgia untuk kesan editorial. Kontrol dan isi memakai font sistem. Foto editorial statis mendampingi hero dan keadaan kosong di stylist. Preview yang mengikuti pilihan pengguna tetap berupa ilustrasi pakaian berlabel.
+Judul memakai Georgia dengan aksen Caveat untuk nuansa tulisan tangan. Kontrol dan isi memakai font sistem. Adegan kampus saat hujan ringan dibuat untuk StyleFit dan dipakai pada hero serta keadaan kosong di stylist. Preview outfit pengguna tetap memakai ilustrasi kategori dan warna berlabel.
 
 ## Landing interaktif
 
