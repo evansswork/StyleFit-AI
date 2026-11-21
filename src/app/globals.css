@@ -359,3 +359,15 @@ select { padding-right: 22px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+.account-page { max-width: 600px; }
+.account-page .privacy-note { margin-bottom: 16px; }
+.account-page .form-actions { margin-top: 8px; }
+.account-back { display: inline-flex; align-items: center; padding-inline: 0; }
+.account-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-block: 10px; padding: 12px; background: var(--tint); border-radius: 8px; font-size: .875rem; overflow-wrap: anywhere; }
+.account-bar > .full { grid-column: 1 / -1; }
+@media (max-width: 500px) {
+  .account-bar { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+.lookbook-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.lookbook-grid .result-card h2 { margin-bottom: 14px; font-size: 1.7rem; }

@@ -38,7 +38,7 @@ test("landing changes items, respects locks and hands choices to the stylist wit
 
 test("guest can add, correct, lock, and use their own clothes; a reload clears the draft", async ({ page }) => {
   await page.goto("/stylist");
-  await expect(page.getByText("Inspirasi gaya", { exact: true })).toBeVisible();
+  await expect(page.getByText("Sunrise Through the Rain Concept Idea", { exact: true })).toBeVisible();
   await page.screenshot({ path: `test-results/stylist-empty-${test.info().project.name}.png`, fullPage: true });
   await expect(page.getByText("Draft sementara di tab ini.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
@@ -82,9 +82,9 @@ test("invalid query values recover to known items and keyboard controls work", a
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih", exact: true })).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("casual");
   await page.goto("/");
-  const photo = page.getByRole("img", { name: /Zheng Yu dan Chen Yanzhou/ });
+  const photo = page.getByRole("img", { name: /Dua orang berkemeja putih berbagi earphone/ });
   await expect(photo).toBeVisible();
-  await expect(photo).toHaveAttribute("src", "/demo/zheng-yu-chen-yanzhou.png");
+  await expect(photo).toHaveAttribute("src", "/demo/sunrise-through-the-rain.png");
   await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(640);
   const layout = await photo.evaluate(image => {
     const photoBox = image.getBoundingClientRect();

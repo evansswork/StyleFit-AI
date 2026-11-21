@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795266364558,
+      "tag": "0000_giant_dazzler",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795296959033,
+      "tag": "0001_lookbook",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795297086294,
+      "tag": "0002_profile_preferences",
+      "breakpoints": true
+    }
+  ]
+}

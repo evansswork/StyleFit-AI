@@ -60,3 +60,9 @@ Jangan menguji dengan data atau foto pribadi yang tidak diperlukan. Tidak ada un
 - Hosting publik, HTTPS/reverse proxy, pengujian beban, monitoring, backup akun/media, serta evaluasi keamanan alur akun perlu dibuktikan ketika bagian tersebut dibangun. Tidak ada server atau database production yang dianggap siap dari build lokal ini.
 
 Urutan berikutnya: UAT guest dan perbaikan yang ditemukan; T10-T13 untuk akun/penyimpanan/lemari lengkap; T20/T22 untuk inspirasi terkurasi; evaluasi analisis gambar secara terpisah. Tidak perlu mengunduh model lokal untuk melanjutkan rekomendasi dasar.
+
+## Account integration follow-up, 22 November 2026
+
+The account sandbox was tested with local PostgreSQL and Mailpit. The guest suite passed all nine browser runs, and the account suite passed all four runs across desktop and a 390 px mobile viewport. The latter covers verification, password reset, explicit import, per-account wardrobe and lookbook isolation, reload persistence, profile preferences, feedback, and handling a deleted garment in a saved outfit. The draft stays in browser memory until the user chooses to save it.
+
+The studio and landing use Sunrise Through the Rain Concept Idea as their visual reference. The label matches the owner's requested title. No owner test session was needed for this milestone. The evidence above comes from automated browser scenarios and does not measure outfit preferences or public SMTP delivery.

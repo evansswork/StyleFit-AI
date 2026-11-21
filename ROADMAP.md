@@ -16,12 +16,12 @@ T00-T02 telah diimplementasikan dan diverifikasi secara teknis. Bukti aktual: RE
 
 ## Tahap 1 Lemari dan outfit
 
-- [ ] T10 Siapkan PostgreSQL khusus StyleFit, Drizzle, Better Auth, serta konfigurasi akun. Implementasikan profil manual, session, isolasi akun, kontrak draft guest, dan pemindahan data yang idempoten. Siapkan pengiriman email sandbox; verifikasi dan pemulihan akun harus teruji sebelum akun dibuka ke publik.
-- [ ] T11 Buat tambah/edit/hapus item lemari, penyimpanan privat pada volume lokal bila unggahan diaktifkan, dan keadaan kosong/gagal. Jangan mewajibkan bucket atau layanan penyimpanan berbayar.
-- [ ] T12 Implementasikan rekomendasi berbasis atribut serta aturan F06-F07, biaya tambahan, item terkunci, dan penjelasan batas.
+- [x] T10 Siapkan PostgreSQL khusus StyleFit, Drizzle, Better Auth, serta konfigurasi akun. Implementasikan profil manual, session, isolasi akun, kontrak draft guest, dan pemindahan data yang idempoten. Siapkan pengiriman email sandbox; verifikasi dan pemulihan akun harus teruji sebelum akun dibuka ke publik.
+- [x] T11 Buat tambah/edit/hapus item lemari, penyimpanan privat pada volume lokal bila unggahan diaktifkan, dan keadaan kosong/gagal. Jangan mewajibkan bucket atau layanan penyimpanan berbayar.
+- [x] T12 Implementasikan rekomendasi berbasis atribut serta aturan F06-F07, biaya tambahan, item terkunci, dan penjelasan batas.
 - [ ] T13 Simpan/buka ulang outfit, lookbook, serta umpan balik. Tambahkan admin atribut/katalog dasar.
 
-Implementasi parsial yang sudah ada: lemari manual guest di memori, tambah/edit/hapus, rekomendasi serta penjelasan, dan item terkunci. T10-T13 tetap belum selesai karena akun, penyimpanan, admin, serta kriteria tahap lengkap belum tersedia.
+Local account, editable name and preferences, wardrobe CRUD, explicit draft import, password recovery, and the rules engine are verified. Photo uploads are outside the active manual wardrobe scope. T13 outfit saving and feedback are verified. Catalog administration remains open.
 
 Selesai tahap: alur lemari sampai outfit tersimpan bekerja; aturan domain punya tes; skenario pengguna terkait, akses antar akun, dan role admin U22/P16 diperiksa.
 

@@ -57,7 +57,7 @@ flowchart LR
   Worker --> Media
 ```
 
-Diagram mencakup layanan tahap lanjut. Alur aktif hanya browser, aplikasi Next.js, dan mesin TypeScript. Data lemari guest tetap dalam state client; tidak masuk database atau URL.
+Diagram mencakup layanan tahap lanjut. The guest path uses the browser and the TypeScript rules engine. The account path also uses PostgreSQL and Mailpit. Guest wardrobe data reaches the database only after the user chooses to import it.
 
 ## Struktur kode yang ditargetkan
 
@@ -125,8 +125,14 @@ CI tahap 0 menjalankan instalasi dari lockfile, lint, typecheck, unit test yang 
 
 ## Implementasi rilis uji pertama
 
-`src/features/demo/data.ts` memiliki fixture, preset, validasi query identifier, dan handoff. `src/features/styling/engine.ts` memiliki aturan kombinasi/harga/kunci; dipakai komponen stylist dan unit test. `src/features/wardrobe/guest-wardrobe.tsx` menyimpan draft pada context client di layout agar bertahan saat navigasi internal; tidak memakai global server atau browser storage. `src/features/styling/stylist.tsx` menangani input dan hasil rekomendasi. Belum ada endpoint akun, database, media, admin, atau provider. Batas browser 40 item membatasi pencarian kombinasi.
+`src/features/demo/data.ts` memiliki fixture, preset, validasi query identifier, dan handoff. `src/features/styling/engine.ts` memiliki aturan kombinasi/harga/kunci; dipakai komponen stylist dan unit test. `src/features/wardrobe/guest-wardrobe.tsx` menyimpan draft pada context client di layout agar bertahan saat navigasi internal; tidak memakai global server atau browser storage. `src/features/styling/stylist.tsx` menangani input dan hasil rekomendasi. The account, wardrobe and lookbook paths use Next.js and PostgreSQL. Media, admin and AI provider routes remain future work. Batas browser 40 item membatasi pencarian kombinasi.
 
 Next.js memakai build server standar; `npm run start` menjalankan hasil build beserta dependensi runtime. Tidak memerlukan Vercel. Bind default ke loopback untuk testing; hosting nanti menentukan reverse proxy, HTTPS, bind, environment, serta backup. Build lokal tidak berarti server sudah dideploy. `agentRules: false` mencegah `next dev` menambahkan instruksi generator ke AGENTS.md proyek.
 
 ESLint 9.39.5 dipin karena peer dependencies plugin import/React/a11y pada konfigurasi Next.js belum menerima ESLint 10. Registry memberi peringatan dukungan ESLint 9 berakhir; ini alat development, bukan runtime web. Perbarui stack lint bersama plugin kompatibel, tanpa `--force` atau `--legacy-peer-deps`. Lockfile dan instalasi bersih menjadi bukti kompatibilitas praktis.
+
+## Account and lookbook implementation
+
+Better Auth verifies email and validates the session at each account operation. The server scopes every profile, wardrobe and lookbook query to that session. Mutations also check that the active session matches the account rendered in the tab. Registration, verification and password reset use a loopback SMTP sandbox. Public delivery and a public origin need a separate setup.
+
+Drizzle migrations store accounts, wardrobe items, preferences and saved outfits. Guest imports use stable item IDs and a per-account transaction. Retrying the same import preserves existing items. Concurrent inserts respect the wardrobe limit. Saved outfits use IDs from the current wardrobe and deduplicate the same selection and context. A saved outfit shows missing items when a wardrobe entry has been deleted. Feedback and notes are stored with the look for later review.

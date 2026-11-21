@@ -1,7 +1,10 @@
 import { defineConfig } from "@playwright/test";
 
+const accountTest = process.env.STYLEFIT_ACCOUNT_TEST === "1";
+
 export default defineConfig({
   testDir: "./tests/e2e",
+  testMatch: accountTest ? "**/account.spec.ts" : "**/stylefit.spec.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
@@ -17,5 +20,9 @@ export default defineConfig({
     url: "http://127.0.0.1:3100",
     reuseExistingServer: false,
     timeout: 60000,
+    env: {
+      AUTH_ENABLED: accountTest ? "true" : "false",
+      BETTER_AUTH_URL: "http://127.0.0.1:3100",
+    },
   },
 });

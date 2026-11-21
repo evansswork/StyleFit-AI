@@ -18,14 +18,14 @@ export default function Home() {
         </div>
         <figure className="hero-media photo-entrance">
           <Image
-            src="/demo/zheng-yu-chen-yanzhou.png"
-            alt="Zheng Yu dan Chen Yanzhou mengenakan kemeja putih dan berbagi earphone"
+            src="/demo/sunrise-through-the-rain.png"
+            alt="Dua orang berkemeja putih berbagi earphone"
             width={640}
             height={360}
             preload
             unoptimized
           />
-          <figcaption>Zheng Yu dan Chen Yanzhou</figcaption>
+          <figcaption>Sunrise Through the Rain Concept Idea</figcaption>
         </figure>
       </section>
       <div className="shell">

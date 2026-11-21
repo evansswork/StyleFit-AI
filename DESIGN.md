@@ -2,11 +2,13 @@
 
 ## Arah visual
 
+**Sunrise Through the Rain Concept Idea** menjadi acuan visual untuk tahap production berikutnya. Pertahankan palet biru kabut dan kuning madu, judul Georgia dengan aksen Caveat, margin sejajar, dan tata letak responsif yang sudah ditinjau. Gunakan foto yang diberikan pemilik pada area inspirasi yang relevan.
+
 StyleFit memakai tampilan editorial fashion yang menonjolkan pakaian dan keputusan pengguna. Produk terasa personal, jelas, dan ringan untuk HP. Bahasa antarmuka adalah Bahasa Indonesia yang singkat dan tidak menghakimi bentuk tubuh.
 
 Palet terinspirasi suasana hujan dan matahari pada [Sunshine Through the Rain](https://www.netflix.com/id-en/title/83112494). Gunakan biru kabut `#EFF3F7` untuk latar, putih hangat `#FFFDF8` untuk permukaan, dan biru gelap `#2C4B68` untuk kontrol aktif. Kuning madu `#FFDA91` muncul di judul dan tombol utama hero. Jaga kontras teks dan indikator fokus di atas foto.
 
-Judul memakai Georgia dengan aksen Caveat untuk nuansa tulisan tangan. Kontrol dan isi memakai font sistem. Foto Zheng Yu dan Chen Yanzhou dari pemilik dipakai pada hero serta keadaan kosong di stylist. Preview outfit pengguna tetap memakai ilustrasi kategori dan warna berlabel.
+Judul memakai Georgia dengan aksen Caveat untuk nuansa tulisan tangan. Kontrol dan isi memakai font sistem. Foto bertema Sunrise Through the Rain Concept Idea dari pemilik dipakai pada hero serta keadaan kosong di stylist. Preview outfit pengguna tetap memakai ilustrasi kategori dan warna berlabel.
 
 ## Landing interaktif
 

@@ -1,8 +1,8 @@
 # StyleFit AI
 
-Personal stylist yang menyusun kombinasi dari pakaian yang kamu punya. Versi awal memakai mesin aturan sendiri tanpa model lokal, API key, login, atau database.
+Personal stylist yang menyusun kombinasi dari pakaian yang kamu punya. Rekomendasi memakai mesin aturan sendiri. Guest dapat mencoba tanpa login atau database.
 
-**Status:** landing interaktif dan stylist guest telah diimplementasikan pada branch `codex/rules-first-foundation`. Akun, penyimpanan permanen, katalog drama/produk, analisis screenshot, avatar 3D, dan photo try-on belum tersedia. Hosting/domain belum dipilih. Bukti pemeriksaan dan batas rilis ada di [RELEASE_REVIEW.md](RELEASE_REVIEW.md).
+**Status:** landing dan stylist guest tersedia. Akun lokal, profil, lemari tersimpan, dan lookbook dapat diaktifkan dengan PostgreSQL dan Mailpit. Hosting publik dan pengiriman email sungguhan masih tahap berikutnya. Detail ada di [RELEASE_REVIEW.md](RELEASE_REVIEW.md).
 
 ## Menjalankan
 
@@ -13,7 +13,7 @@ npm ci
 npm run dev
 ```
 
-Buka `http://127.0.0.1:3000`. Demo dan lemari manual tidak memerlukan `.env` atau service tambahan. Kontrak konfigurasi ada di `.env.example`; jangan mengisi key provider untuk build ini. Draft lemari berada di memori browser dan bertahan selama navigasi internal. Reload atau menutup tab menghapus draft.
+Buka `http://127.0.0.1:3000`. Demo and guest wardrobe run without an environment file or additional services. Kontrak konfigurasi ada di `.env.example`; jangan mengisi key provider untuk build ini. Draft lemari berada di memori browser dan bertahan selama navigasi internal. Reload atau menutup tab menghapus draft.
 
 Untuk build production secara lokal:
 
@@ -33,6 +33,15 @@ Build server Next.js standar tidak memerlukan Vercel. `npm run start` memakai bu
 5. Edit atribut atau kunci item, lalu buat ulang kombinasi. Hasil hanya memakai barang yang kamu masukkan; tidak mengarang kepemilikan atau produk belanja.
 
 Preview adalah ilustrasi kategori dan warna 2D. Bukan model pakaian spesifik, simulasi ukuran, atau photo try-on. Konteks tropis/sejuk adalah input manual; bukan cuaca live atau panduan winter.
+
+## Local account environment
+
+1. Run a dedicated PostgreSQL database and a separate test database whose name ends in `_test`. Both must be reachable through loopback.
+2. Run Mailpit on loopback with SMTP port 1025 and HTTP port 8025.
+3. Copy `.env.example` to `.env.local`. Set `AUTH_ENABLED=true`, fill both database URLs, and set `BETTER_AUTH_SECRET` to a fresh random value of at least 32 characters. Keep `BETTER_AUTH_URL` at `http://127.0.0.1:3000` for the default local server.
+4. Run `npm run db:migrate` and `npm run dev`. Open `/akun` and register with an address such as `review@example.test`. Open Mailpit at `http://127.0.0.1:8025` for verification or reset.
+
+Run `npm run test:account` after building. It migrates the dedicated test database and verifies the account flows at desktop and mobile widths. GitHub Actions starts isolated PostgreSQL and Mailpit containers for the same checks.
 
 ## Pemeriksaan
 
@@ -66,8 +75,8 @@ Workflow `.github/workflows/ci.yml` menjalankan pemeriksaan dari lockfile tanpa 
 
 Konsep versi 1.0 tetap menjadi arsip [HTML](<StyleFit AI - Konsep dan Panduan Testing.html>) dan [teks](<StyleFit AI - Konsep dan Panduan Testing.txt>). Provider serta status lama di arsip digantikan PRD, ARCHITECTURE, dan COSTS.
 
-Skill repo: [UI](.agents/skills/stylefit-ui/SKILL.md), [AI Integration](.agents/skills/stylefit-ai-integration/SKILL.md), dan [UAT](.agents/skills/stylefit-uat/SKILL.md). Kerjakan milestone aktif, jalankan checks, laporkan bukti, kemudian pemilik menguji serta menerima hasil. Fitur tahap lanjut tetap dalam visi tanpa diklaim sudah tersedia.
+Skill repo: [UI](.agents/skills/stylefit-ui/SKILL.md), [AI Integration](.agents/skills/stylefit-ai-integration/SKILL.md), dan [UAT](.agents/skills/stylefit-uat/SKILL.md). Production work continues from the highest-priority ready milestone. The agent runs acceptance checks and reports evidence. Public rollout requires the deployment environment. Fitur tahap lanjut tetap dalam visi tanpa diklaim sudah tersedia.
 
 ## GitHub
 
-`origin`: `https://github.com/evansswork/StyleFit-AI.git`. Perubahan memakai branch `codex/rules-first-foundation`; status pengiriman dicatat di laporan akhir. Merge, pemilihan hosting, dan deployment publik belum dilakukan.
+`origin`: `https://github.com/evansswork/StyleFit-AI.git`. Perubahan memakai branch `codex/rules-first-foundation`; lihat riwayat commit untuk status pengiriman. Merge, pemilihan hosting, dan deployment publik belum dilakukan.

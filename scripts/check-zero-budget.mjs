@@ -42,8 +42,10 @@ export function checkZeroBudget(config, root) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const defaults = parseEnv(readFileSync(path.join(root, '.env.example'), 'utf8'));
-  const localFile = path.join(root, '.env');
-  const local = existsSync(localFile) ? parseEnv(readFileSync(localFile, 'utf8')) : {};
+  const local = Object.assign({}, ...['.env', '.env.local'].map(name => {
+    const file = path.join(root, name);
+    return existsSync(file) ? parseEnv(readFileSync(file, 'utf8')) : {};
+  }));
   const errors = checkZeroBudget({ ...defaults, ...local, ...process.env }, root);
   if (errors.length) {
     console.error(errors.join('\n'));
