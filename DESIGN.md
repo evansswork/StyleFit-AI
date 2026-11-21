@@ -4,23 +4,21 @@
 
 StyleFit memakai tampilan editorial fashion yang menonjolkan pakaian dan keputusan pengguna. Produk terasa personal, jelas, dan ringan untuk HP. Bahasa antarmuka adalah Bahasa Indonesia yang singkat dan tidak menghakimi bentuk tubuh.
 
-Fondasi warna: latar `#F8FAFC`, permukaan `#FFFFFF`, teks utama `#17212B`, teks pendukung `#52606D`, aksen `#1746D1`, dan garis `#CBD5E1`. Gunakan satu aksen utama pada seluruh halaman; warna status hanya menyampaikan keadaan nyata. Periksa kontras hasil implementasi, termasuk disabled, error, dan focus.
+Palet memakai latar gading `#F8F6EF`, permukaan `#FFFEFA`, teks `#232820`, dan aksen hijau tua `#344A37`. Batas kontrol memakai `#787C70`. Gunakan aksen yang sama di landing dan stylist, dengan teks putih pada tombol utama dan indikator fokus yang terlihat.
 
-Gunakan teks putih pada tombol aksen. Garis `#CBD5E1` untuk pemisah dekoratif; batas kontrol yang perlu terlihat memakai `#64748B` atau state aksen yang memenuhi kontras. Focus tidak bergantung pada garis dekoratif yang tipis.
-
-Tipografi awal memakai system sans-serif agar demo tidak menunggu font eksternal. Headline memakai bobot dan ukuran besar yang terukur; rincian pakaian tetap mudah dibaca. Spasi mengikuti kelipatan 4 px, radius kontrol 8 px, dan permukaan besar 16 px. Ini arah awal, bukan klaim desain yang sudah divalidasi.
+Judul utama memakai Georgia untuk kesan editorial. Kontrol dan isi memakai font sistem. Foto editorial statis mendampingi hero dan keadaan kosong di stylist. Preview yang mengikuti pilihan pengguna tetap berupa ilustrasi pakaian berlabel.
 
 ## Landing interaktif
 
-Hero memadukan pesan singkat dengan ruang mencoba outfit yang dominan. Demo ditempatkan dekat pesan utama, bukan tersembunyi setelah deretan fitur. Pada HP, kontrol dan preview tetap berdekatan.
+Hero memadukan pesan singkat dengan foto editorial dan tautan langsung ke demo. Demo berada tepat setelah hero. Pada desktop, preview dan kontrol berdampingan. Pada HP, kontrol mengikuti preview dalam satu bagian.
 
 Contoh pesan: **Gaya yang kamu suka, dari baju yang kamu punya.** CTA utama: **Coba stylist**. Tautan eksplorasi boleh menggulir ke demo, tetapi tidak menggantikan CTA menuju alur yang berfungsi.
 
 Urutan isi:
-1. Navigasi, pesan manfaat, dan demo yang langsung dapat dicoba.
-2. Penjelasan singkat hubungan inspirasi, lemari, dan outfit.
-3. Contoh perubahan satu item dan biaya tambahan dari fixture berlabel.
-4. Penjelasan preview serta privasi; FAQ dan footer seperlunya.
+
+1. Navigasi, foto editorial, dan ajakan mencoba.
+2. Demo berlabel dengan kontrol gaya, cuaca, dan pakaian.
+3. Penjelasan singkat cara memakai stylist.
 
 Demo menggunakan fixture lokal dan aset dengan hak penggunaan yang jelas. Pilihan gaya, cuaca, dan item mengubah hasil yang dapat dilihat. Jangan membuat simulasi loading AI hanya untuk menampilkan fixture yang sudah tersedia. Pilihan dapat diteruskan melalui parameter yang divalidasi dan hanya berisi identifier demo yang tidak sensitif.
 
@@ -63,6 +61,7 @@ Rute tahap lanjut hanya diaktifkan ketika alurnya tersedia. Area publik menjelas
 
 ## Keadaan komponen
 
+- Stylist menampilkan foto inspirasi sebelum ada outfit. Setelah kombinasi dibuat, pengguna dapat memilih alternatif yang tampil di preview. Hasil lama dibersihkan saat data yang mendasarinya berubah.
 - Item pakaian memperlihatkan gambar, kategori, warna, status dimiliki, dan tindakan yang relevan.
 - Hasil outfit memperlihatkan kombinasi, alasan, kebutuhan tambahan, serta visual yang tersedia. Harga belum diketahui ditulis apa adanya.
 - Form memiliki label, satuan, validasi dekat field, dan data yang tetap ada setelah kegagalan yang dapat dipulihkan.

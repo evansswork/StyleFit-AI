@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { OutfitArt } from "@/components/outfit-art";
 import { changeDemoContext, demoItems, type DemoState } from "../demo/data";
@@ -22,13 +23,18 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [previewIndex, setPreviewIndex] = useState(0);
   const [message, setMessage] = useState(startWithDemo ? "Pilihan demo dibawa dari landing. Kamu bisa mengeditnya di sini." : "Mulai dengan atasan, bawahan, dan sepatu yang kamu punya.");
   const [error, setError] = useState("");
   const items = isDemo ? demoItems : wardrobe;
   const visibleItems = isDemo ? demoItems.filter(item => Object.values(selected).includes(item.id)) : wardrobe;
-  const preview = outfits[0]?.items || (isDemo ? visibleItems : []);
+  const preview = outfits[previewIndex]?.items ?? (isDemo ? visibleItems : []);
 
-  function invalidate() { setOutfits([]); setError(""); }
+  function invalidate() {
+    setOutfits([]);
+    setPreviewIndex(0);
+    setError("");
+  }
   function updateContext(nextStyle: Style, nextWeather: Weather) {
     if (isDemo) {
       const result = changeDemoContext({ style, weather, selected, locked: Object.keys(locked) as Slot[] }, nextStyle, nextWeather);
@@ -69,6 +75,7 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
     setMessage(`${item.name} ${editingId ? "diperbarui" : "ditambahkan"}. Buat ulang kombinasi untuk memakai atribut terbaru.`);
   }
   function recommend() {
+    setPreviewIndex(0);
     if (!/^\d+$/.test(budget)) { setError("Isi bujet dengan rupiah utuh, minimal 0."); setOutfits([]); return; }
     const result = generateOutfits({ items, style, weather, budget: Number(budget), locked });
     setOutfits(result.outfits); setError(result.error || "");
@@ -76,20 +83,25 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
   }
 
   return <>
-    <div className="stylist-intro"><div><p className="eyebrow">STYLIST / VERSI AWAL</p><h1>Hari ini, pakai apa?</h1><p>Mulai dari pakaianmu. Kita cari kombinasi yang sesuai.</p></div><span className="pill">Mesin aturan · tanpa model AI</span></div>
-    <div className="privacy-note"><strong>Draft sementara di tab ini.</strong> Muat ulang atau menutup halaman menghapus lemari dan hasil. Belum ada akun atau penyimpanan permanen.</div>
+    <div className="stylist-intro">
+      <h1>Hari ini, <em>pakai apa?</em></h1>
+      <p>Pilih gaya dan cuaca, lalu susun outfit dari isi lemarimu.</p>
+    </div>
     <div className="stylist-grid">
       <div className="stylist-input">
         <section className="panel" aria-labelledby="context-title"><h2 id="context-title">Rencana harimu</h2>
           <div className="form-grid"><label>Gaya<select value={style} onChange={event => updateContext(event.target.value as Style, weather)}><option value="casual">Casual</option><option value="smart-casual">Smart casual</option></select></label>
             <label>Konteks cuaca<select value={weather} onChange={event => updateContext(style, event.target.value as Weather)}><option value="tropical">Tropis</option><option value="cool">Sejuk</option></select></label></div>
-          <label>Bujet tambahan (Rp)<input inputMode="numeric" value={budget} maxLength={10} onChange={event => { setBudget(event.target.value); invalidate(); }} aria-describedby="budget-help" /></label>
-          <p id="budget-help" className="fine-print">Barang milikmu tidak dihitung sebagai belanja baru. Versi ini belum memiliki katalog belanja; bujet belum dapat mencari produk tambahan.</p>
+          <details className="budget-details">
+            <summary>Bujet tambahan</summary>
+            <label>Bujet tambahan (Rp)<input inputMode="numeric" value={budget} maxLength={10} onChange={event => { setBudget(event.target.value); invalidate(); }} aria-describedby="budget-help" /></label>
+            <p id="budget-help" className="fine-print">Kombinasi dari isi lemarimu memiliki tambahan belanja Rp0. Katalog belanja belum tersedia.</p>
+          </details>
         </section>
         <section className="panel" aria-labelledby="wardrobe-title">
           <div className="panel-title"><h2 id="wardrobe-title">{isDemo ? "Pilihan demo" : "Lemari di tab ini"}</h2><span className="pill">{isDemo ? "Demo contoh" : `${wardrobe.length}/40 item`}</span></div>
-          <button type="button" className="button secondary full" onClick={switchCollection}>{isDemo ? "Gunakan lemari sendiri" : "Coba koleksi contoh"}</button>
-          {isDemo && <p className="fine-print">Pilihan contoh, bukan barang milikmu atau harga produk live.</p>}
+          <button type="button" className="text-button collection-toggle" onClick={switchCollection}>{isDemo ? "Gunakan lemari sendiri" : "Coba koleksi contoh"}</button>
+          {!isDemo && <p className="privacy-note"><strong>Draft sementara di tab ini.</strong> Lemari dan hasil hilang saat tab dimuat ulang atau ditutup.</p>}
           {!visibleItems.length && <div className="empty-state"><strong>Lemari masih kosong.</strong><p>Tambahkan minimal satu atasan, bawahan, dan sepatu. Konteks sejuk juga memerlukan outer.</p></div>}
           <ul className="wardrobe-list">{visibleItems.map(item => <li key={item.id}>
             <div className="item-description"><span className="color-swatch" style={{ backgroundColor: item.color }} /><span><strong>{item.name}</strong><small>{slotNames[item.slot]} · {isDemo ? "Contoh" : "Milikmu"}</small></span></div>
@@ -120,11 +132,28 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
         <p className="feedback" role="status">{message}</p>
       </div>
       <section className="stylist-output" aria-labelledby="result-title">
-        <div className="panel-title"><h2 id="result-title">{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2><span className="eyebrow">2D PREVIEW</span></div>
-        {outfits.length > 0 && <p className="fine-print">Preview kombinasi 1 · kategori dan warna ilustrasi</p>}
-        {preview.length ? <OutfitArt items={preview} /> : <div className="empty-preview"><span className="empty-monogram">sf</span><p>Kombinasi pertamamu<br />dimulai dari lemarimu.</p></div>}
-        {!outfits.length && <p className="fine-print">{isDemo ? "Pilihan awal dari demo ditampilkan di atas. Buat kombinasi untuk melihat alternatif dengan item terkunci." : "Tambahkan pakaian lalu buat kombinasi. Ilustrasi hanya mewakili kategori dan warna, bukan model pakaian yang persis."}</p>}
-        <div className="outfit-results">{outfits.map((outfit, index) => <article className="result-card" key={outfit.items.map(item => item.id).join("|")} aria-label={`Kombinasi ${index + 1}`}>
+        <div className="stylist-stage">
+          <div className="panel-title"><h2 id="result-title">{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2></div>
+          {outfits.length > 1 && <div className="preview-options" role="group" aria-label="Pilih kombinasi untuk preview">
+            {outfits.map((outfit, index) => <button
+              className="lock-button"
+              key={outfit.items.map(item => item.id).join("|")}
+              type="button"
+              aria-pressed={previewIndex === index}
+              aria-controls="outfit-preview"
+              onClick={() => setPreviewIndex(index)}
+            >Lihat kombinasi {index + 1}</button>)}
+          </div>}
+          <div id="outfit-preview" aria-live="polite">
+            {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview">
+              <Image src="/demo/style-editorial.webp" alt="" width={1536} height={1024} unoptimized />
+              <figcaption>Inspirasi gaya</figcaption>
+            </figure>}
+          </div>
+          {!preview.length && <p className="stage-hint">Tambahkan pakaian, lalu buat kombinasi untuk melihat preview di sini.</p>}
+          {isDemo && !outfits.length && <p className="stage-hint">Buat kombinasi untuk melihat alternatif dengan item terkunci.</p>}
+        </div>
+        <div className="outfit-results">{outfits.map((outfit, index) => <article className="result-card" data-preview={previewIndex === index} key={outfit.items.map(item => item.id).join("|")} aria-label={`Kombinasi ${index + 1}`}>
           <div className="panel-title"><h3>Kombinasi {index + 1}</h3><span className="pill">{isDemo ? "Contoh" : "Dari lemariku"}</span></div>
           <ul>{outfit.items.map(item => <li key={item.id}><span className="color-swatch" style={{ backgroundColor: item.color }} />{item.name}{locked[item.slot] === item.id && <small> · dipertahankan</small>}</li>)}</ul>
           {outfit.reasons.map(reason => <p key={reason}>{reason}</p>)}

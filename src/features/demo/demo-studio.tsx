@@ -23,8 +23,11 @@ export function DemoStudio() {
     setState({ ...state, selected: { ...state.selected, [slot]: next.id } });
     setMessage(`${slotNames[slot]} diganti menjadi ${next.name}; pilihan lain tetap.`);
   }
-  return <section className="demo-studio" aria-label="Demo outfit interaktif" id="demo">
-    <div className="studio-heading"><span className="eyebrow">RUANG COBA</span><span className="pill">Demo contoh</span></div>
+  return <section className="demo-studio" aria-labelledby="demo-title" id="demo">
+    <div className="studio-heading">
+      <div><h2 id="demo-title">Ruang coba</h2><p>Ubah gaya, cuaca, atau satu item.</p></div>
+      <span className="pill">Demo contoh</span>
+    </div>
     <OutfitArt items={items} />
     <div className="studio-controls">
       <fieldset className="choice-group"><legend>Gaya kamu</legend><div className="segmented">
@@ -36,16 +39,18 @@ export function DemoStudio() {
         <button type="button" aria-pressed={state.weather === "cool"} onClick={() => changeContext(state.style, "cool")}>Sejuk</button>
       </div></fieldset>
       <div className="demo-item-list">{items.map(item => <div className="demo-item" key={item.id}>
-        <span><small>{slotNames[item.slot]}</small><strong>{item.name}</strong></span>
+        <div className="item-description">
+          <span aria-hidden="true" className="color-swatch" style={{ backgroundColor: item.color }} />
+          <span><small>{slotNames[item.slot]}</small><strong>{item.name}</strong></span>
+        </div>
         <button type="button" className="text-button" aria-label={`Ganti ${slotNames[item.slot].toLowerCase()}`} disabled={state.locked.includes(item.slot)} onClick={() => swap(item.slot)}>Ganti</button>
         <button type="button" className="lock-button" aria-label={`Pertahankan ${slotNames[item.slot].toLowerCase()}`} aria-pressed={state.locked.includes(item.slot)} onClick={() => {
           setState({ ...state, locked: state.locked.includes(item.slot) ? state.locked.filter(slot => slot !== item.slot) : [...state.locked, item.slot] });
           setMessage(state.locked.includes(item.slot) ? `Kunci ${item.name} dilepas.` : `${item.name} dipertahankan.`);
         }}>{state.locked.includes(item.slot) ? "Terkunci" : "Kunci"}</button>
       </div>)}</div>
-      <p className="feedback" role="status">{message || "Coba ganti satu item. Temukan kombinasi yang terasa kamu."}</p>
+      <p className="feedback" role="status">{message}</p>
       <Link className="button primary full" href={demoHref(state)}>Lanjutkan pilihan ke stylist</Link>
-      <p className="fine-print">Pakaian ilustrasi, bukan koleksi pribadimu. Tanpa scan atau unggah foto.</p>
     </div>
   </section>;
 }

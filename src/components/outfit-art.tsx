@@ -1,7 +1,7 @@
-import type { Item, Slot } from "@/features/styling/engine";
+import { slotNames, slots, type Item } from "@/features/styling/engine";
 
 // Original vector garment illustrations; these are not scans, 3D models, or fit predictions.
-export function GarmentArt({ item }: { item: Item }) {
+function GarmentArt({ item }: { item: Item }) {
   const stroke = "#344451";
   return <svg viewBox="0 0 200 200" role="img" aria-label={`Ilustrasi ${item.name}`}>
     <g fill={item.color} stroke={stroke} strokeWidth="1.8" strokeLinejoin="round">
@@ -33,16 +33,18 @@ export function GarmentArt({ item }: { item: Item }) {
   </svg>;
 }
 
-export function OutfitArt({ items, compact = false }: { items: Item[]; compact?: boolean }) {
-  const find = (slot: Slot) => items.find(item => item.slot === slot);
-  return <div className={`outfit-art${compact ? " compact" : ""}`} aria-label="Preview outfit ilustrasi 2D">
-    <span className="art-caption">THE EVERYDAY EDIT</span>
-    <div className="art-layout">
-      {(["top", "bottom", "shoes", "outer"] as Slot[]).map(slot => {
-        const item = find(slot);
-        return item ? <div key={slot} className={`garment garment-${slot}`}><GarmentArt item={item} /></div> : null;
+export function OutfitArt({ items }: { items: Item[] }) {
+  return <figure className="outfit-art">
+    <ul className="art-layout">
+      {slots.map(slot => {
+        const item = items.find(candidate => candidate.slot === slot);
+        if (!item) return null;
+        return <li className={`garment garment-${slot}`} key={slot}>
+          <div className="garment-image" key={item.id}><GarmentArt item={item} /></div>
+          <span className="garment-label">{slotNames[slot]}</span>
+        </li>;
       })}
-    </div>
-    <span className="art-footnote">Ilustrasi 2D · bukan simulasi ukuran</span>
-  </div>;
+    </ul>
+    <figcaption>Ilustrasi 2D kategori dan warna pakaian</figcaption>
+  </figure>;
 }

@@ -25,11 +25,21 @@ test("landing changes items, respects locks and hands choices to the stylist wit
   const cards = page.getByRole("article", { name: /Kombinasi/ });
   await expect(cards).toHaveCount(3);
   for (const card of await cards.all()) await expect(card).toContainText("Kaus biru");
+  const secondPreview = page.getByRole("button", { name: "Lihat kombinasi 2", exact: true });
+  await secondPreview.click();
+  await expect(secondPreview).toHaveAttribute("aria-pressed", "true");
+  const alternative = cards.nth(1);
+  for (const item of await alternative.getByRole("listitem").all()) {
+    const name = (await item.innerText()).split("·")[0].trim();
+    await expect(page.locator("#outfit-preview").getByRole("img", { name: `Ilustrasi ${name}`, exact: true })).toBeVisible();
+  }
   expect(externalRequests).toEqual([]);
 });
 
 test("guest can add, correct, lock, and use their own clothes; a reload clears the draft", async ({ page }) => {
   await page.goto("/stylist");
+  await expect(page.getByText("Inspirasi gaya", { exact: true })).toBeVisible();
+  await page.screenshot({ path: `test-results/stylist-empty-${test.info().project.name}.png`, fullPage: true });
   await expect(page.getByText("Draft sementara di tab ini.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
   await expect(page.getByRole("main").getByRole("alert")).toContainText("Belum ada");
@@ -68,6 +78,7 @@ test("invalid query values recover to known items and keyboard controls work", a
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih", exact: true })).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("casual");
   await page.goto("/");
+  await expect(page.getByRole("img", { name: /Dua orang dengan padu padan/ })).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Lewati ke isi utama" })).toBeFocused();
   const styleButton = page.getByRole("button", { name: "Smart casual", exact: true });
@@ -81,5 +92,5 @@ test("invalid query values recover to known items and keyboard controls work", a
   if (test.info().project.name === "mobile-360") {
     expect(await styleButton.evaluate(element => getComputedStyle(element).transitionDuration)).toBe("0s");
   }
-  await page.screenshot({ path: `test-results/landing-${test.info().project.name}.png`, fullPage: true });
+  await page.screenshot({ path: `test-results/landing-${test.info().project.name}.png`, fullPage: true, animations: "disabled" });
 });
