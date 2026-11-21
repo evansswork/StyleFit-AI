@@ -6,11 +6,11 @@ StyleFit memakai tampilan editorial fashion yang menonjolkan pakaian dan keputus
 
 Palet terinspirasi suasana hujan dan matahari pada [Sunshine Through the Rain](https://www.netflix.com/id-en/title/83112494). Gunakan biru kabut `#EFF3F7` untuk latar, putih hangat `#FFFDF8` untuk permukaan, dan biru gelap `#2C4B68` untuk kontrol aktif. Kuning madu `#FFDA91` muncul di judul dan tombol utama hero. Jaga kontras teks dan indikator fokus di atas foto.
 
-Judul memakai Georgia dengan aksen Caveat untuk nuansa tulisan tangan. Kontrol dan isi memakai font sistem. Adegan kampus saat hujan ringan dibuat untuk StyleFit dan dipakai pada hero serta keadaan kosong di stylist. Preview outfit pengguna tetap memakai ilustrasi kategori dan warna berlabel.
+Judul memakai Georgia dengan aksen Caveat untuk nuansa tulisan tangan. Kontrol dan isi memakai font sistem. Ilustrasi AI Zheng Yu dan Chen Yanzhou berpayung dipakai pada hero serta keadaan kosong di stylist. Preview outfit pengguna tetap memakai ilustrasi kategori dan warna berlabel.
 
 ## Landing interaktif
 
-Hero memadukan pesan singkat dengan foto editorial dan tautan langsung ke demo. Demo berada tepat setelah hero. Pada desktop, preview dan kontrol berdampingan. Pada HP, kontrol mengikuti preview dalam satu bagian.
+Hero menampilkan ilustrasi karakter berdampingan dengan judul di desktop dan di atas judul pada HP. Label ilustrasi AI tampil pada gambar. Demo berada tepat setelah hero. Pada desktop, preview dan kontrol berdampingan. Pada HP, kontrol mengikuti preview dalam satu bagian.
 
 Contoh pesan: **Gaya yang kamu suka, dari baju yang kamu punya.** CTA utama: **Coba stylist**. Tautan eksplorasi boleh menggulir ke demo, tetapi tidak menggantikan CTA menuju alur yang berfungsi.
 
@@ -61,7 +61,7 @@ Rute tahap lanjut hanya diaktifkan ketika alurnya tersedia. Area publik menjelas
 
 ## Keadaan komponen
 
-- Stylist menampilkan foto inspirasi sebelum ada outfit. Setelah kombinasi dibuat, pengguna dapat memilih alternatif yang tampil di preview. Hasil lama dibersihkan saat data yang mendasarinya berubah.
+- Stylist menampilkan ilustrasi inspirasi sebelum ada outfit. Setelah kombinasi dibuat, pengguna dapat memilih alternatif yang tampil di preview. Di HP, tautan dari form membawa pengguna langsung ke judul hasil. Hasil lama dibersihkan saat data yang mendasarinya berubah.
 - Item pakaian memperlihatkan gambar, kategori, warna, status dimiliki, dan tindakan yang relevan.
 - Hasil outfit memperlihatkan kombinasi, alasan, kebutuhan tambahan, serta visual yang tersedia. Harga belum diketahui ditulis apa adanya.
 - Form memiliki label, satuan, validasi dekat field, dan data yang tetap ada setelah kegagalan yang dapat dipulihkan.

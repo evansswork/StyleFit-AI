@@ -130,10 +130,11 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
         <button type="button" className="button primary full" onClick={recommend}>Buat kombinasi</button>
         {error && <p className="error-message" role="alert">{error}</p>}
         <p className="feedback" role="status">{message}</p>
+        {outfits.length > 0 && <a className="text-button jump-to-outfits" href="#result-title">Lihat hasil outfit</a>}
       </div>
       <section className="stylist-output" aria-labelledby="result-title">
         <div className="stylist-stage">
-          <div className="panel-title"><h2 id="result-title">{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2></div>
+          <div className="panel-title"><h2 id="result-title" tabIndex={-1}>{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2></div>
           {outfits.length > 1 && <div className="preview-options" role="group" aria-label="Pilih kombinasi untuk preview">
             {outfits.map((outfit, index) => <button
               className="lock-button"
@@ -146,8 +147,8 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
           </div>}
           <div id="outfit-preview" aria-live="polite">
             {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview">
-              <Image src="/demo/campus-sunshower.webp" alt="" width={1536} height={1024} unoptimized />
-              <figcaption>Inspirasi gaya</figcaption>
+              <Image src="/demo/sunshower-duo.webp" alt="" width={1536} height={1024} unoptimized />
+              <figcaption>Inspirasi gaya <span>· Ilustrasi AI</span></figcaption>
             </figure>}
           </div>
           {!preview.length && <p className="stage-hint">Tambahkan pakaian, lalu buat kombinasi untuk melihat preview di sini.</p>}

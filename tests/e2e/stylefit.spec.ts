@@ -38,7 +38,7 @@ test("landing changes items, respects locks and hands choices to the stylist wit
 
 test("guest can add, correct, lock, and use their own clothes; a reload clears the draft", async ({ page }) => {
   await page.goto("/stylist");
-  await expect(page.getByText("Inspirasi gaya", { exact: true })).toBeVisible();
+  await expect(page.getByText("Inspirasi gaya · Ilustrasi AI", { exact: true })).toBeVisible();
   await page.screenshot({ path: `test-results/stylist-empty-${test.info().project.name}.png`, fullPage: true });
   await expect(page.getByText("Draft sementara di tab ini.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
@@ -58,6 +58,10 @@ test("guest can add, correct, lock, and use their own clothes; a reload clears t
   await expect(result).toContainText("Kaus favorit");
   await expect(result).toContainText("Tambahan belanja: Rp");
   await expect(result).toContainText("3 item berasal dari lemarimu");
+  if (test.info().project.name.startsWith("mobile")) {
+    await page.getByRole("link", { name: "Lihat hasil outfit" }).click();
+    await expect(page.getByRole("heading", { name: "Kombinasi untukmu" })).toBeFocused();
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: `test-results/stylist-${test.info().project.name}.png`, fullPage: true });
   await page.getByRole("button", { name: "Hapus Kaus favorit", exact: true }).click();
@@ -78,7 +82,7 @@ test("invalid query values recover to known items and keyboard controls work", a
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih", exact: true })).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("casual");
   await page.goto("/");
-  await expect(page.getByRole("img", { name: /Dua orang dengan padu padan/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /Ilustrasi Zheng Yu dan Chen Yanzhou/ })).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Lewati ke isi utama" })).toBeFocused();
   const styleButton = page.getByRole("button", { name: "Smart casual", exact: true });

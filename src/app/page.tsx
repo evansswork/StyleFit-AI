@@ -7,19 +7,22 @@ export default function Home() {
   return <>
     <SiteHeader />
     <main id="main">
-      <section className="hero shell" aria-labelledby="hero-title">
-        <Image
-          className="hero-photo"
-          src="/demo/campus-sunshower.webp"
-          alt="Dua orang dengan padu padan jaket biru dan kemeja kotak-kotak berjalan di tengah hujan ringan"
-          width={1536}
-          height={1024}
-          preload
-          unoptimized
-        />
+      <section className="hero" aria-labelledby="hero-title">
+        <figure className="hero-media">
+          <Image
+            className="hero-photo"
+            src="/demo/sunshower-duo.webp"
+            alt="Ilustrasi Zheng Yu dan Chen Yanzhou berbagi payung, dengan jaket hijau dan kemeja kotak-kotak"
+            width={1536}
+            height={1024}
+            preload
+            unoptimized
+          />
+          <figcaption>Ilustrasi AI · Zheng Yu dan Chen Yanzhou</figcaption>
+        </figure>
         <div className="hero-copy">
           <h1 id="hero-title">Gaya yang kamu suka. <em>Dari baju yang kamu punya.</em></h1>
-          <p className="hero-description">Padu padankan isi lemarimu sesuai gaya dan cuaca. Mulai tanpa akun atau unggah foto.</p>
+          <p className="hero-description">Padu padankan isi lemarimu sesuai gaya dan cuaca. Mulai tanpa akun.</p>
           <div className="hero-actions">
             <Link href="/stylist" className="button primary">Coba stylist</Link>
             <a href="#demo" className="button secondary">Mainkan demo</a>
