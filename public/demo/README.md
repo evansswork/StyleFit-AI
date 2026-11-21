@@ -1,5 +1,5 @@
 # Aset demo
 
-Ilustrasi pakaian pada `src/components/outfit-art.tsx` memakai bentuk vektor generik. `sunshower-duo.webp` adalah fan art yang dibuat dengan ImageGen untuk landing dan keadaan kosong di stylist. Adegan baru menafsirkan Zheng Yu dan Chen Yanzhou dari [Sunshine Through the Rain](https://www.netflix.com/id-en/title/83112494). UI menandai gambar sebagai ilustrasi AI.
+Foto `zheng-yu-chen-yanzhou.png` berasal dari lampiran pemilik untuk [Sunshine Through the Rain](https://www.netflix.com/id-en/title/83112494). Landing dan stylist menggunakan PNG yang sama pada rasio aslinya. Animasi CSS diterapkan ke bingkai, sedangkan file foto dipertahankan persis.
 
-Ilustrasi adalah representasi kategori dan warna 2D, bukan model item spesifik, rekonstruksi screenshot, simulasi ukuran, atau try-on. Identifier serta atribut contoh berada di `src/features/demo/data.ts`; harga contoh tidak dinyatakan sebagai harga produk.
+Ilustrasi pakaian pada `src/components/outfit-art.tsx` memakai bentuk vektor generik yang mewakili kategori dan warna 2D. Identifier serta atribut contoh berada di `src/features/demo/data.ts`.

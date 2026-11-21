@@ -146,9 +146,9 @@ export function Stylist({ initialDemo, startWithDemo }: { initialDemo: DemoState
             >Lihat kombinasi {index + 1}</button>)}
           </div>}
           <div id="outfit-preview" aria-live="polite">
-            {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview">
-              <Image src="/demo/sunshower-duo.webp" alt="" width={1536} height={1024} unoptimized />
-              <figcaption>Inspirasi gaya <span>· Ilustrasi AI</span></figcaption>
+            {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview photo-entrance">
+              <Image src="/demo/zheng-yu-chen-yanzhou.png" alt="Zheng Yu dan Chen Yanzhou mengenakan kemeja putih dan berbagi earphone" width={640} height={360} unoptimized />
+              <figcaption>Inspirasi gaya</figcaption>
             </figure>}
           </div>
           {!preview.length && <p className="stage-hint">Tambahkan pakaian, lalu buat kombinasi untuk melihat preview di sini.</p>}

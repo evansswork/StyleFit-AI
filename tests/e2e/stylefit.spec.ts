@@ -38,7 +38,7 @@ test("landing changes items, respects locks and hands choices to the stylist wit
 
 test("guest can add, correct, lock, and use their own clothes; a reload clears the draft", async ({ page }) => {
   await page.goto("/stylist");
-  await expect(page.getByText("Inspirasi gaya · Ilustrasi AI", { exact: true })).toBeVisible();
+  await expect(page.getByText("Inspirasi gaya", { exact: true })).toBeVisible();
   await page.screenshot({ path: `test-results/stylist-empty-${test.info().project.name}.png`, fullPage: true });
   await expect(page.getByText("Draft sementara di tab ini.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
@@ -82,7 +82,25 @@ test("invalid query values recover to known items and keyboard controls work", a
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih", exact: true })).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("casual");
   await page.goto("/");
-  await expect(page.getByRole("img", { name: /Ilustrasi Zheng Yu dan Chen Yanzhou/ })).toBeVisible();
+  const photo = page.getByRole("img", { name: /Zheng Yu dan Chen Yanzhou/ });
+  await expect(photo).toBeVisible();
+  await expect(photo).toHaveAttribute("src", "/demo/zheng-yu-chen-yanzhou.png");
+  await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(640);
+  const layout = await photo.evaluate(image => {
+    const photoBox = image.getBoundingClientRect();
+    const hero = image.closest(".hero")!.getBoundingClientRect();
+    const header = document.querySelector(".site-header")!.getBoundingClientRect();
+    return {
+      photoRatio: photoBox.width / photoBox.height,
+      leftOffset: Math.abs(hero.left - header.left),
+      rightOffset: Math.abs(hero.right - header.right),
+      animation: getComputedStyle(image.parentElement!).animationName,
+    };
+  });
+  expect(layout.photoRatio).toBeCloseTo(16 / 9, 2);
+  expect(layout.leftOffset).toBeLessThan(1);
+  expect(layout.rightOffset).toBeLessThan(1);
+  expect(layout.animation).toBe(test.info().project.name === "mobile-360" ? "none" : "photo-arrive");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Lewati ke isi utama" })).toBeFocused();
   const styleButton = page.getByRole("button", { name: "Smart casual", exact: true });

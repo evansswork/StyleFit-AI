@@ -7,19 +7,7 @@ export default function Home() {
   return <>
     <SiteHeader />
     <main id="main">
-      <section className="hero" aria-labelledby="hero-title">
-        <figure className="hero-media">
-          <Image
-            className="hero-photo"
-            src="/demo/sunshower-duo.webp"
-            alt="Ilustrasi Zheng Yu dan Chen Yanzhou berbagi payung, dengan jaket hijau dan kemeja kotak-kotak"
-            width={1536}
-            height={1024}
-            preload
-            unoptimized
-          />
-          <figcaption>Ilustrasi AI · Zheng Yu dan Chen Yanzhou</figcaption>
-        </figure>
+      <section className="hero shell" aria-labelledby="hero-title">
         <div className="hero-copy">
           <h1 id="hero-title">Gaya yang kamu suka. <em>Dari baju yang kamu punya.</em></h1>
           <p className="hero-description">Padu padankan isi lemarimu sesuai gaya dan cuaca. Mulai tanpa akun.</p>
@@ -28,6 +16,17 @@ export default function Home() {
             <a href="#demo" className="button secondary">Mainkan demo</a>
           </div>
         </div>
+        <figure className="hero-media photo-entrance">
+          <Image
+            src="/demo/zheng-yu-chen-yanzhou.png"
+            alt="Zheng Yu dan Chen Yanzhou mengenakan kemeja putih dan berbagi earphone"
+            width={640}
+            height={360}
+            preload
+            unoptimized
+          />
+          <figcaption>Zheng Yu dan Chen Yanzhou</figcaption>
+        </figure>
       </section>
       <div className="shell">
         <DemoStudio />
