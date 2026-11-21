@@ -29,7 +29,7 @@ export type StylingRequest = {
   locked?: Selection;
   referenceTopColor?: string;
 };
-export type StylingResult = { outfits: Outfit[]; error: string | null };
+export type StylingResult = { outfits: Outfit[]; error: string | null; missing: Slot[] };
 
 export const slotNames: Record<Slot, string> = {
   top: "Atasan", bottom: "Bawahan", shoes: "Sepatu", outer: "Outer",
@@ -43,7 +43,7 @@ export const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
 
 export function generateOutfits(request: StylingRequest): StylingResult {
   const { items, style, weather, budget, locked = {}, referenceTopColor } = request;
-  const fail = (error: string): StylingResult => ({ outfits: [], error });
+  const fail = (error: string, missing: Slot[] = []): StylingResult => ({ outfits: [], error, missing });
   if (!Number.isSafeInteger(budget) || budget < 0 || budget > 1_000_000_000) {
     return fail("Bujet harus berupa rupiah utuh antara 0 dan 1 miliar.");
   }
@@ -70,7 +70,7 @@ export function generateOutfits(request: StylingRequest): StylingResult {
     && item.styles.includes(style) && item.weather.includes(weather)
     && (!locked[slot] || locked[slot] === item.id)));
   const missing = required.filter((_, index) => !candidates[index].length);
-  if (missing.length) return fail(`Belum ada ${missing.map(slot => slotNames[slot].toLowerCase()).join(", ")} yang sesuai. Tambahkan item atau ubah konteks.`);
+  if (missing.length) return fail(`Belum ada ${missing.map(slot => slotNames[slot].toLowerCase()).join(", ")} yang sesuai. Tambahkan item atau ubah konteks.`, missing);
 
   const best: { outfit: Outfit; score: number; key: string }[] = [];
   function combine(index: number, chosen: Item[]) {
@@ -108,5 +108,5 @@ export function generateOutfits(request: StylingRequest): StylingResult {
   }
   combine(0, []);
   if (!best.length) return fail("Belum ada kombinasi yang memenuhi bujet dan item terkunci. Ubah pilihan atau bujetmu.");
-  return { outfits: best.map(entry => entry.outfit), error: null };
+  return { outfits: best.map(entry => entry.outfit), error: null, missing: [] };
 }

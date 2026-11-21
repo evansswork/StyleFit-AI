@@ -10,6 +10,7 @@ import { changeDemoContext, demoItems, preset, type DemoState } from "../demo/da
 import { useGuestWardrobe } from "../wardrobe/guest-wardrobe";
 import { changeAccountWardrobe } from "@/server/wardrobe-actions";
 import { saveOutfit } from "@/server/lookbook-actions";
+import { ShoppingLinks } from "./shopping-links";
 import type { Inspiration } from "../inspiration/catalog";
 import { garmentColors as colors, generateOutfits, rupiah, slotNames, slots, type Item, type Outfit, type Selection, type Slot, type Style, type Weather } from "./engine";
 
@@ -45,6 +46,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
   const [savedSelection, setSavedSelection] = useState<string | null>(null);
   const [message, setMessage] = useState(startWithDemo ? "Pilihan demo dibawa dari landing. Kamu bisa mengeditnya di sini." : "Mulai dengan atasan, bawahan, dan sepatu yang kamu punya.");
   const [error, setError] = useState("");
+  const [missing, setMissing] = useState<Slot[]>([]);
   const items = isDemo ? demoItems : wardrobe;
   const visibleItems = isDemo ? demoItems.filter(item => Object.values(selected).includes(item.id)) : wardrobe;
   const preview = outfits[previewIndex]?.items ?? (isDemo ? visibleItems : []);
@@ -93,6 +95,8 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
 
   function invalidate() {
     setOutfits([]);
+    setMissing([]);
+    setMessage("");
     setPreviewIndex(0);
     setSavedSelection(null);
     setError("");
@@ -158,12 +162,12 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     if (editingId === item.id) { setEditingId(null); setDraft(emptyDraft); }
   }
   function recommend() {
-    setPreviewIndex(0);
-    setSavedSelection(null);
-    if (!/^\d+$/.test(budget)) { setError("Isi bujet dengan rupiah utuh, minimal 0."); setOutfits([]); return; }
+    invalidate();
+    if (!/^\d+$/.test(budget)) { setError("Isi bujet dengan rupiah utuh, minimal 0."); return; }
     const result = generateOutfits({ items, style, weather, budget: Number(budget), locked,
       referenceTopColor: isDemo ? undefined : inspiration?.topColor ?? undefined });
     setOutfits(result.outfits); setError(result.error || "");
+    setMissing(result.missing);
     if (result.outfits.length) setMessage(`${result.outfits.length} kombinasi tersedia dari ${isDemo ? "koleksi contoh" : "lemarimu"}.`);
   }
 
@@ -244,6 +248,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
         </section>
         <button type="button" className="button primary full" onClick={recommend}>Buat kombinasi</button>
         {error && <p className="error-message" role="alert">{error}</p>}
+        {!isDemo && missing.length > 0 && <ShoppingLinks missing={missing} style={style} topColor={inspiration?.topColor ?? undefined} />}
         <p className="feedback" role="status">{message}</p>
         {outfits.length > 0 && <a className="text-button jump-to-outfits" href="#result-title">Lihat hasil outfit</a>}
       </div>

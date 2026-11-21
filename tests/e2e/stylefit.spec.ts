@@ -139,3 +139,32 @@ test("guest can open a sourced inspiration and keep their own wardrobe in the st
   await expect(page.getByText("Ide awal · Sunrise Through the Rain Concept Idea.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Edit Kemeja dari lemariku" })).toBeVisible();
 });
+
+test("shopping links use missing outfit categories without making price or ownership claims", async ({ page }) => {
+  const externalRequests: string[] = [];
+  page.on("request", request => {
+    if (!["127.0.0.1", "localhost"].includes(new URL(request.url()).hostname)) externalRequests.push(request.url());
+  });
+  await page.goto("/stylist?inspiration=sunrise-through-the-rain");
+  const recommend = page.getByRole("button", { name: "Buat kombinasi" });
+  const shopping = page.getByText("Cari pelengkap di marketplace", { exact: true });
+  await recommend.click();
+  await shopping.click();
+  await expect(page.getByText(/Harga, ongkir, dan stok perlu dicek/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Cari kemeja polos putih di Shopee" }))
+    .toHaveAttribute("href", "https://shopee.co.id/search?keyword=kemeja%20polos%20putih");
+  await expect(page.getByRole("link", { name: "Cari kemeja polos putih di Tokopedia" }))
+    .toHaveAttribute("href", "https://www.tokopedia.com/search?st=product&q=kemeja%20polos%20putih");
+  await expect(page.getByRole("article", { name: /Kombinasi/ })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: `test-results/shopping-${test.info().project.name}.png`, fullPage: true });
+  const form = page.getByRole("form", { name: "Form pakaian" });
+  await form.getByLabel("Nama pakaian", { exact: true }).fill("Kemeja yang sudah ada");
+  await form.getByRole("button", { name: "Tambahkan pakaian" }).click();
+  await expect(shopping).toHaveCount(0);
+  await recommend.click();
+  await shopping.click();
+  await expect(page.getByRole("link", { name: "Cari celana bahan lurus di Shopee" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Cari kemeja polos putih di Shopee" })).toHaveCount(0);
+  expect(externalRequests).toEqual([]);
+});

@@ -33,6 +33,7 @@ describe("styling engine", () => {
     const result = generateOutfits({ ...base, style: "smart-casual", locked: { top: "tee-blue" } });
     expect(result.outfits).toEqual([]);
     expect(result.error).toMatch(/terkunci/);
+    expect(result.missing).toEqual([]);
   });
   it("rejects unavailable, deleted, or wrong-slot locked items", () => {
     for (const locked of [{ top: "deleted" }, { top: "jeans-indigo" }, { top: "tee-blue" }]) {
@@ -43,6 +44,7 @@ describe("styling engine", () => {
     const result = generateOutfits({ ...base, items: owned.filter(item => item.slot === "top") });
     expect(result.outfits).toEqual([]);
     expect(result.error).toMatch(/bawahan, sepatu/);
+    expect(result.missing).toEqual(["bottom", "shoes"]);
   });
   it("requires a suitable outer for cool weather and excludes it in tropical weather", () => {
     const cool = generateOutfits({ ...base, weather: "cool" });

@@ -10,7 +10,7 @@ Rp0 berarti tidak ada langganan layanan aplikasi atau biaya per panggilan API ya
 | --- | --- | --- |
 | Gemini/Ollama untuk rekomendasi | Mesin aturan TypeScript sendiri | Aktif; tidak memerlukan model, API key, GPU, atau layanan inference |
 | FASHN API per gambar | Belum diaktifkan atau dipilih | Try-on bukan fungsi mesin aturan; evaluasi terpisah sebelum tersedia |
-| Database terkelola berbayar | PostgreSQL lokal, Drizzle, Better Auth | Software lokal; database khusus StyleFit belum dibuat |
+| Database terkelola berbayar | PostgreSQL lokal, Drizzle, Better Auth | The dedicated local StyleFit database and test database are configured |
 | Object storage SaaS | Volume privat pada komputer/server sendiri | Akses lewat endpoint terotorisasi; perlu backup serta disk persisten |
 | Redis SaaS dan BullMQ | pg-boss pada PostgreSQL aplikasi | Menghindari service Redis tambahan; dipasang saat antrean diperlukan |
 | Layanan email berlangganan | Mailpit lokal untuk development; SMTP yang sudah tersedia untuk publik | Mailpit bukan layanan pengiriman ke pengguna nyata |
@@ -60,4 +60,4 @@ Sebelum memilih hosting, pastikan paket mendukung Node.js LTS, proses server dan
 
 Untuk build guest 0.1.0, kebutuhan aktif hanya server Node.js untuk web; database, worker, media privat, dan GPU belum digunakan. Persyaratan layanan tambahan di atas berlaku ketika fitur pemiliknya diaktifkan, bukan alasan membeli semuanya sekarang.
 
-Untuk development rilis awal, cukup Node.js; tidak ada layanan model atau database yang perlu dinyalakan. Untuk online, hosting serta domain menunggu keputusan pemilik. Tidak ada deploy, pendaftaran domain, auto-top-up, atau aktivasi billing pada perubahan ini.
+The guest build requires only Node.js. Account tests use local PostgreSQL and Mailpit. Marketplace search links require neither an API key nor an affiliate account. Untuk online, hosting serta domain menunggu keputusan pemilik. Tidak ada deploy, pendaftaran domain, auto-top-up, atau aktivasi billing pada perubahan ini.

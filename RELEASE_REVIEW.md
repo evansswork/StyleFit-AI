@@ -72,3 +72,9 @@ The studio and landing use Sunrise Through the Rain Concept Idea as their visual
 Lint, type checking, all 27 configuration and unit checks, database migrations, and the optimized build passed. All 12 guest browser runs passed at 1440, 390, and 360 px. The new scenario verifies the sourced concept title, unknown title recovery, keyboard search, and wardrobe continuity through the stylist handoff. Desktop and 360 px screenshots were visually reviewed.
 
 All four account browser runs passed. Coverage includes an ordinary account denied access to the editor, the allowed account publishing and unpublishing a fixture, and a stale inspiration link recovering to the regular stylist. Tests used disposable addresses and local Mailpit. Only the built-in editorial inspiration ships by default.
+
+## Marketplace search fallback, 22 November 2026
+
+Lint, type checking, 27 configuration and unit checks, the optimized build, 15 guest browser runs, and four account browser runs passed. A collapsed recovery panel appears only after the stylist identifies missing categories. Browser checks cover both outgoing URLs, removal after adding a suitable garment, no outfit or price claim, and no external request before following a link. The open panel was visually reviewed at 360 px.
+
+The Shopee search destination responded with HTTP 200. The Tokopedia URL was generated and validated locally; the destination could not be reached through this environment. Product prices, stock, affiliate links, and a shopping wishlist are outside this slice.

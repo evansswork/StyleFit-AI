@@ -384,3 +384,8 @@ select { padding-right: 22px; }
 .admin-page textarea { min-height: 80px; padding: 8px 10px; border: 1px solid var(--control); border-radius: 7px; font-weight: 400; }
 .checkbox-label { flex-direction: row; align-items: center; min-height: 44px; }
 .checkbox-label input { width: 19px; min-height: auto; padding: 0; }
+
+.shopping-options { margin-top: 12px; }
+.shopping-options summary { cursor: pointer; font-weight: 650; }
+.shopping-options p { margin-top: 8px; font-size: .875rem; color: var(--muted); }
+.shopping-options li { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 6px; border-top: 1px solid var(--line); padding: 7px 0; margin-top: 6px; }
