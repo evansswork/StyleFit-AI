@@ -78,3 +78,7 @@ All four account browser runs passed. Coverage includes an ordinary account deni
 Lint, type checking, 27 configuration and unit checks, the optimized build, 15 guest browser runs, and four account browser runs passed. A collapsed recovery panel appears only after the stylist identifies missing categories. Browser checks cover both outgoing URLs, removal after adding a suitable garment, no outfit or price claim, and no external request before following a link. The open panel was visually reviewed at 360 px.
 
 The Shopee search destination responded with HTTP 200. The Tokopedia URL was generated and validated locally; the destination could not be reached through this environment. Product prices, stock, affiliate links, and a shopping wishlist are outside this slice.
+
+## Editable reference preferences, 22 November 2026
+
+The stylist applies an edited or cleared top-color preference immediately to the next outfit and shopping search. The editorial source entry keeps its original value. The unit suite verifies the corrected ranking and lock priority. The guest browser suite verifies that changing the preference clears old shopping results and the next search uses the selected color. All 27 configuration and unit checks, 15 guest browser runs, and four account browser runs passed on the optimized build.

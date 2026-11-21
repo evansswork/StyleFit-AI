@@ -26,6 +26,13 @@ Rekomendasi awal menggunakan kode aturan, bukan model bahasa yang dilatih sendir
 
 Analisis screenshot dan judul/karakter drama sembarang tidak tercipta otomatis dari mesin aturan. Referensi drama memerlukan koleksi bersumber; membaca gambar memerlukan evaluasi model terpisah. API free tier berpotensi dipakai nanti, tetapi belum dipilih, dipasang, atau diberi credential. Model lokal bukan lagi prasyarat atau default proyek.
 
+## Screenshot analysis provider review, 22 November 2026
+
+- Gemini Developer API lists no-charge image input for some models. Google’s unpaid-service terms allow improvement use and human review and instruct customers to exclude sensitive, confidential, and personal data. Keep it out of the public upload flow. [Pricing](https://ai.google.dev/gemini-api/docs/pricing) · [Unpaid data terms](https://ai.google.dev/gemini-api/terms#unpaid-services)
+- Cloudflare Workers AI Gemma 4 26B is the first candidate for a screenshot-only benchmark. The hosted model advertises vision and an Apache 2.0 model license. Workers Free allocates 10,000 neurons per day and requests fail when the plan limit is reached. Stateless inference has a no-training and zero-retention policy subject to documented exceptions. The REST API works independently of the application’s eventual hosting provider. [Model](https://developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it/) · [License](https://gemma.ai/resources/apache-2/) · [Pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) · [Data usage](https://developers.cloudflare.com/workers-ai/platform/data-usage/)
+
+The review is based on documentation. A live Free-plan test with synthetic or licensed fixtures is still required to verify image payload support, usable category and color outputs, actual neuron use, and latency. Check low light, multiple people, covered garments, invalid outputs, and rate-limit recovery. Keep uploads disabled until those checks pass. Do not send profile or biometric media, enable paid fallback, or use stateful uploads for this evaluation.
+
 ## Photo try-on belum menjadi fitur gratis yang siap
 
 Model inti [FASHN VTON 1.5](https://huggingface.co/fashn-ai/fashn-vton-1.5) berlisensi Apache 2.0; model card menyebut kebutuhan sekitar 8 GB VRAM dan merekomendasikan GPU khusus. Itu bukan bukti kecepatan atau dukungan MPS pada Mac ini.

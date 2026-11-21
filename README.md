@@ -34,7 +34,7 @@ Build server Next.js standar tidak memerlukan Vercel. `npm run start` memakai bu
 
 Preview adalah ilustrasi kategori dan warna 2D. Bukan model pakaian spesifik, simulasi ukuran, atau photo try-on. Konteks tropis/sejuk adalah input manual; bukan cuaca live atau panduan winter.
 
-Search by title on `/inspirasi`. Opening a result passes its style and optional top color to the stylist, where it uses the same wardrobe. The source links identify each drama title. The styling notes are editorial adaptations. When a required category has no suitable garment, the optional marketplace searches use the selected style and reference color. The links provide no live prices or stock.
+Search by title on `/inspirasi`. Opening a result passes its style and optional top color to the stylist, where it uses the same wardrobe. Change or clear the suggested top color in the stylist to refine the next combination and search links. The source links identify each drama title. The styling notes are editorial adaptations. When a required category has no suitable garment, the optional marketplace searches use the selected style and reference color. The links provide no live prices or stock.
 
 ## Local account environment
 

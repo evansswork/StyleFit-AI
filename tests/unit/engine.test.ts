@@ -26,7 +26,8 @@ describe("styling engine", () => {
   it("prefers a curated reference color after enforcing wardrobe locks", () => {
     const request = { ...base, referenceTopColor: garmentColors.putih };
     expect(generateOutfits(request).outfits[0].items.find(item => item.slot === "top")?.id).toBe("tee-white");
-    expect(generateOutfits(request).outfits[0].reasons).toContain("Warna atasan mengikuti ide awal yang kamu pilih.");
+    expect(generateOutfits(request).outfits[0].reasons).toContain("Warna atasan mengikuti preferensimu.");
+    expect(generateOutfits({ ...request, referenceTopColor: garmentColors.biru }).outfits[0].items.find(item => item.slot === "top")?.id).toBe("tee-blue");
     expect(generateOutfits({ ...request, locked: { top: "tee-blue" } }).outfits[0].items.find(item => item.slot === "top")?.id).toBe("tee-blue");
   });
   it("does not silently unlock a conflicting item", () => {

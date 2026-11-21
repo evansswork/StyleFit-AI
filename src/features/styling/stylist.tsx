@@ -39,6 +39,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
   const [style, setStyle] = useState<Style>(initialDemo.style);
   const [weather, setWeather] = useState<Weather>(initialDemo.weather);
   const [budget, setBudget] = useState("0");
+  const [referenceTopColor, setReferenceTopColor] = useState(inspiration?.topColor ?? "");
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -165,7 +166,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     invalidate();
     if (!/^\d+$/.test(budget)) { setError("Isi bujet dengan rupiah utuh, minimal 0."); return; }
     const result = generateOutfits({ items, style, weather, budget: Number(budget), locked,
-      referenceTopColor: isDemo ? undefined : inspiration?.topColor ?? undefined });
+      referenceTopColor: isDemo ? undefined : referenceTopColor });
     setOutfits(result.outfits); setError(result.error || "");
     setMissing(result.missing);
     if (result.outfits.length) setMessage(`${result.outfits.length} kombinasi tersedia dari ${isDemo ? "koleksi contoh" : "lemarimu"}.`);
@@ -201,6 +202,12 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
         <section className="panel" aria-labelledby="context-title"><h2 id="context-title">Rencana harimu</h2>
           <div className="form-grid"><label>Gaya<select value={style} onChange={event => updateContext(event.target.value as Style, weather)}><option value="casual">Casual</option><option value="smart-casual">Smart casual</option></select></label>
             <label>Konteks cuaca<select value={weather} onChange={event => updateContext(style, event.target.value as Weather)}><option value="tropical">Tropis</option><option value="cool">Sejuk</option></select></label></div>
+          {!isDemo && inspiration && <label>Warna atasan dari inspirasi
+            <select value={referenceTopColor} onChange={event => { setReferenceTopColor(event.target.value); invalidate(); }}>
+              <option value="">Bebas</option>
+              {Object.entries(colors).map(([name, color]) => <option value={color} key={color}>{name}</option>)}
+            </select>
+          </label>}
           <details className="budget-details">
             <summary>Bujet tambahan</summary>
             <label>Bujet tambahan (Rp)<input inputMode="numeric" value={budget} maxLength={10} onChange={event => { setBudget(event.target.value); invalidate(); }} aria-describedby="budget-help" /></label>
@@ -248,7 +255,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
         </section>
         <button type="button" className="button primary full" onClick={recommend}>Buat kombinasi</button>
         {error && <p className="error-message" role="alert">{error}</p>}
-        {!isDemo && missing.length > 0 && <ShoppingLinks missing={missing} style={style} topColor={inspiration?.topColor ?? undefined} />}
+        {!isDemo && missing.length > 0 && <ShoppingLinks missing={missing} style={style} topColor={referenceTopColor} />}
         <p className="feedback" role="status">{message}</p>
         {outfits.length > 0 && <a className="text-button jump-to-outfits" href="#result-title">Lihat hasil outfit</a>}
       </div>

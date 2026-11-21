@@ -28,8 +28,8 @@ Selesai tahap: alur lemari sampai outfit tersimpan bekerja; aturan domain punya 
 ## Tahap 2 Inspirasi dan belanja
 
 - [ ] T20 Add sourced drama, character, and look entries through admin and explorer. Title search, editorial notes, publishing controls, and handoff to the stylist are implemented. Character-level and frame provenance fields remain open.
-- [ ] T21 Evaluasi API cloud gratis untuk analisis gambar setelah cakupan, kuota, privasi, kualitas, dan biaya lulus. Bangun analisis screenshot, pilihan subjek, koreksi atribut, status pekerjaan, serta pemulihan hanya setelah evaluasi. Mesin styling tetap berjalan mandiri tanpa model lokal atau API; tidak ada fallback berbayar.
-- [ ] T22 Match a reference to the wardrobe and product catalog using the latest corrections. Curated style and top-color matching are implemented for the wardrobe. Product matching and reference corrections remain open.
+- [ ] T21 Evaluasi API cloud gratis untuk analisis gambar setelah cakupan, kuota, privasi, kualitas, dan biaya lulus. Bangun analisis screenshot, pilihan subjek, koreksi atribut, status pekerjaan, serta pemulihan hanya setelah evaluasi. Mesin styling tetap berjalan mandiri tanpa model lokal atau API; tidak ada fallback berbayar. The initial provider review is in COSTS.md. A Free-plan benchmark is pending.
+- [ ] T22 Match a reference to the wardrobe and product catalog using the latest corrections. Curated style and editable top-color matching are implemented for the wardrobe. Product matching and screenshot corrections remain open.
 - [ ] T23 Add products, price observations, wishlist, and labeled affiliate links. Search links for missing categories are implemented. Checkout stays on the marketplace.
 
 Selesai tahap: sumber dan biaya dapat diperiksa, referensi tidak dikenal tertangani, serta provider gagal tidak merusak alur yang sudah berhasil. Setelah tahap 0-2 lulus kriteria fitur aktif, siapkan rilis awal.

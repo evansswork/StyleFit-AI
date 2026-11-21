@@ -158,6 +158,13 @@ test("shopping links use missing outfit categories without making price or owner
   await expect(page.getByRole("article", { name: /Kombinasi/ })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: `test-results/shopping-${test.info().project.name}.png`, fullPage: true });
+  const color = page.getByRole("combobox", { name: "Warna atasan dari inspirasi", exact: true });
+  await color.selectOption({ label: "biru" });
+  await expect(shopping).toHaveCount(0);
+  await recommend.click();
+  await shopping.click();
+  await expect(page.getByRole("link", { name: "Cari kemeja polos biru di Shopee" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Cari kemeja polos putih di Shopee" })).toHaveCount(0);
   const form = page.getByRole("form", { name: "Form pakaian" });
   await form.getByLabel("Nama pakaian", { exact: true }).fill("Kemeja yang sudah ada");
   await form.getByRole("button", { name: "Tambahkan pakaian" }).click();
@@ -165,6 +172,6 @@ test("shopping links use missing outfit categories without making price or owner
   await recommend.click();
   await shopping.click();
   await expect(page.getByRole("link", { name: "Cari celana bahan lurus di Shopee" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Cari kemeja polos putih di Shopee" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Cari kemeja/ })).toHaveCount(0);
   expect(externalRequests).toEqual([]);
 });

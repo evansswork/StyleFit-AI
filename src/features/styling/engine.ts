@@ -95,7 +95,7 @@ export function generateOutfits(request: StylingRequest): StylingResult {
       reasons: [
         `${styleNames[style]} untuk konteks ${weatherNames[weather].toLowerCase()} berdasarkan atribut yang dimasukkan.`,
         weather === "cool" ? "Outer ditambahkan untuk layering ringan; bukan panduan pakaian winter." : "Tanpa outer agar kombinasi lebih ringan untuk konteks tropis.",
-        ...(followsReference ? ["Warna atasan mengikuti ide awal yang kamu pilih."] : []),
+        ...(followsReference ? ["Warna atasan mengikuti preferensimu."] : []),
         owned ? `${owned} item berasal dari lemarimu; harga beli lamanya tidak dihitung sebagai belanja baru.` : "Kombinasi ini tidak memakai barang dari lemarimu.",
         ...(chosen.some(item => item.source === "demo") ? ["Item contoh adalah ilustrasi pilihan, bukan barang yang diklaim kamu miliki."] : []),
         ...(unknownPrices.length ? ["Harga tambahan belum lengkap; outfit belum dapat dinyatakan memenuhi bujet."] : []),
