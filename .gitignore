@@ -1,0 +1,33 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies and generated output
+node_modules/
+.next/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Private data and model weights
+/uploads/
+/private-data/
+/local-models/
+*.safetensors
+*.pt
+*.pth
+*.dump
+
+# Machine files
+.DS_Store
+*.log
+*.tsbuildinfo

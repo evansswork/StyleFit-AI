@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Konsep Aplikasi StyleFit AI dan Panduan Testing</title><style>
+:root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #23313d; background: #f3f5f7; }
+* { box-sizing: border-box; }
+body { margin: 0; line-height: 1.7; }
+main { max-width: 1040px; margin: 32px auto; padding: 48px 60px; background: white; }
+header { margin-bottom: 32px; }
+header p { color: #526473; margin: 0 0 8px; font-size: 14px; }
+.title { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; font-weight: 750; margin: 0; color: #16384c; }
+nav { padding: 8px 0 20px; }
+nav ol { padding-left: 24px; columns: 2; column-gap: 32px; }
+nav li { break-inside: avoid; margin-bottom: 6px; }
+h1 { font-size: 27px; line-height: 1.3; margin: 48px 0 18px; color: #16384c; scroll-margin-top: 20px; }
+h2 { font-size: 20px; line-height: 1.4; margin: 28px 0 12px; color: #244d62; }
+p { margin: 12px 0; }
+a { color: #07698e; text-underline-offset: 3px; overflow-wrap: anywhere; }
+li { margin: 7px 0; }
+blockquote { margin: 20px 0; font-size: 19px; font-style: italic; color: #36596b; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 20px 0 28px; }
+th, td { text-align: left; vertical-align: top; padding: 11px 12px; border-bottom: 1px solid #dce3e8; overflow-wrap: break-word; }
+th { background: #eaf0f4; font-weight: 650; color: #16384c; }
+tbody tr:nth-child(even) { background: #fafbfc; }
+td:first-child { min-width: 78px; }
+@media(max-width: 700px) { main { margin: 0; padding: 28px 18px; } nav ol { columns: 1; } table { font-size: 12px; } th, td { padding: 8px 6px; } h1 { font-size: 24px; } }
+@media print { :root { background: white; } main { margin: 0; padding: 0; max-width: none; } body { font-size: 10pt; line-height: 1.5; } h1 { font-size: 19pt; break-after: avoid; } h2 { font-size: 13pt; break-after: avoid; } table { font-size: 9pt; } thead { display: table-header-group; } tr { break-inside: avoid; } nav { display: none; } a { color: inherit; } @page { size: A4; margin: 18mm; } }
+</style></head><body><main><header><p>StyleFit AI · Konsep versi 1.0</p><p class="title">Konsep Aplikasi StyleFit AI dan Panduan Testing</p></header><nav aria-label="Daftar isi"><strong>Daftar isi</strong><ol><li><a href="#section-1">Ringkasan dan keputusan produk</a></li><li><a href="#section-2">Panduan membaca dan status testing</a></li><li><a href="#section-3">Pengguna dan kebutuhan utama</a></li><li><a href="#section-4">Fitur aplikasi yang dikunci</a></li><li><a href="#section-5">Alur pengalaman pengguna</a></li><li><a href="#section-6">Prinsip rekomendasi dan visualisasi</a></li><li><a href="#section-7">Tech stack dan arsitektur solo project</a></li><li><a href="#section-8">Urutan pengerjaan production</a></li><li><a href="#section-9">Skenario pengujian pengguna</a></li><li><a href="#section-10">Kriteria penerimaan Product Owner</a></li><li><a href="#section-11">Pencatatan hasil dan keputusan rilis</a></li><li><a href="#section-12">Referensi teknis</a></li></ol></nav><article><h1 id="section-1">Ringkasan dan keputusan produk</h1>
+<p><strong>Versi 1.0 — 21 November 2026. Status konsep: dikunci sebagai acuan pengembangan dan pengujian.</strong></p>
+<p>StyleFit AI adalah aplikasi web personal stylist yang membantu pengguna mengubah inspirasi gaya menjadi outfit yang dapat dipakai. Rekomendasi menggabungkan preferensi pengguna, pakaian yang dimiliki, aktivitas, cuaca, proporsi tubuh, serta bujet tambahan.</p>
+<blockquote>
+<p>Temukan gaya yang kamu sukai, lihat interpretasinya pada dirimu, lalu wujudkan menggunakan pakaian sendiri dan tambahan belanja sesuai kebutuhan.</p>
+</blockquote>
+<p>Kebutuhan utamanya adalah membantu pengguna menentukan pakaian dengan lebih mudah dan percaya diri. Inspirasi K-drama menjadi salah satu pintu masuk; lemari digital menjadi dasar pemanfaatan pakaian sehari-hari.</p>
+<p><strong>Keputusan yang dikunci</strong></p>
+<ul>
+<li><p>Nama kerja produk: StyleFit AI.</p>
+</li>
+<li><p>Platform: web yang nyaman digunakan melalui HP dan desktop.</p>
+</li>
+<li><p>Visi lengkap mencakup lemari, inspirasi K-drama, analisis screenshot dan video, auto-style, avatar 3D, photo try-on, panduan ukuran, rambut, belanja, lookbook, serta packing.</p>
+</li>
+<li><p>Implementasi dikerjakan bertahap oleh satu pengembang. Fitur di tahap berikutnya tetap termasuk visi produk.</p>
+</li>
+<li><p>Pengguna dapat mulai tanpa scan tubuh dan tanpa akun.</p>
+</li>
+<li><p>Visualisasi menggambarkan perkiraan penampilan. Kepastian ukuran memerlukan data tubuh dan produk yang memadai.</p>
+</li>
+</ul>
+<p>Fitur baru di luar daftar ini dicatat untuk revisi berikutnya. Koreksi bug, perbaikan aksesibilitas, dan penyempurnaan alur yang sudah ditetapkan tetap menjadi bagian pekerjaan yang berjalan.</p>
+<h1 id="section-2">Panduan membaca dan status testing</h1>
+<p>Pengguna membaca bagian kebutuhan, fitur, alur, dan skenario pengujian. Product Owner menggunakan bagian yang sama untuk menilai manfaat, kemudian memeriksa aturan produk, tahapan production, dan kriteria penerimaan.</p>
+<p>Seluruh uraian fitur menjelaskan <strong>perilaku yang ditargetkan</strong>. Ketersediaan nyata mengikuti build yang sedang diuji. Pada awal setiap sesi, pengembang mencatat versi build, URL testing, tahap yang tersedia, perangkat, dan fitur yang diaktifkan.</p>
+<table>
+<thead>
+<tr>
+  <th>Status</th>
+  <th>Penggunaan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Belum diuji</td>
+  <td>Skenario belum dijalankan pada build tersebut</td>
+</tr>
+<tr>
+  <td>Lulus</td>
+  <td>Hasil sesuai kriteria dan bukti dicatat</td>
+</tr>
+<tr>
+  <td>Gagal</td>
+  <td>Perilaku menyimpang; langkah reproduksi dicatat</td>
+</tr>
+<tr>
+  <td>Terblokir</td>
+  <td>Skenario tidak dapat dijalankan karena kendala pada build atau layanan</td>
+</tr>
+<tr>
+  <td>Belum tersedia</td>
+  <td>Fitur berada pada tahap pengembangan berikutnya</td>
+</tr>
+</tbody>
+</table>
+<p>Semua skenario dalam acuan ini berstatus awal <strong>Belum diuji</strong>. Fitur yang belum tersedia pada build dicatat sebagai Belum tersedia, bukan dianggap lulus. Pengujian konsep menilai pemahaman dan kegunaan; pengujian aplikasi menilai perilaku implementasi.</p>
+<h1 id="section-3">Pengguna dan kebutuhan utama</h1>
+<p>Pengguna utama menyukai gaya berpakaian dari drama atau media sosial, tetapi sulit menerapkannya pada tubuh, aktivitas, cuaca, dan isi lemari sendiri. Sebagian memiliki pakaian terbatas dan ingin menghindari pembelian yang tidak banyak digunakan.</p>
+<table>
+<thead>
+<tr>
+  <th>Kebutuhan</th>
+  <th>Pernyataan pengguna</th>
+  <th>Hasil yang diharapkan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Memadukan lemari</td>
+  <td>Saya punya beberapa baju tetapi bingung mengombinasikannya</td>
+  <td>Pilihan outfit yang memakai barang milik sendiri</td>
+</tr>
+<tr>
+  <td>Menerapkan inspirasi</td>
+  <td>Saya suka gaya karakter drama ini</td>
+  <td>Penjelasan ciri gaya dan adaptasi yang dapat dipakai</td>
+</tr>
+<tr>
+  <td>Membayangkan penampilan</td>
+  <td>Saya ingin melihat siluetnya pada diri saya</td>
+  <td>Preview yang jelas beserta jenis representasinya</td>
+</tr>
+<tr>
+  <td>Melengkapi pakaian</td>
+  <td>Saya ingin membeli barang yang berguna</td>
+  <td>Alternatif dengan alasan, harga yang tersedia, dan kecocokan dengan lemari</td>
+</tr>
+<tr>
+  <td>Menyiapkan perjalanan</td>
+  <td>Saya bingung memilih dan menghitung pakaian bawaan</td>
+  <td>Outfit per kegiatan dan packing list tanpa barang terhitung ganda</td>
+</tr>
+</tbody>
+</table>
+<p>Contoh kebutuhan utama: pengguna ingin pergi santai pada cuaca panas, memiliki kemeja putih, celana hitam, dan sneakers, serta menyukai sebuah referensi drama. Aplikasi membantu menyusun adaptasi, menjelaskan cara memakainya, dan menunjukkan kekurangan barang jika ada.</p>
+<h1 id="section-4">Fitur aplikasi yang dikunci</h1>
+<h2>F01 Guest mode dan akun</h2>
+<p>Pengguna dapat mencoba inspirasi dan rekomendasi tanpa login. Akun menyimpan profil, lemari, avatar, lookbook, wishlist, dan perjalanan lintas perangkat. Data guest yang akan dipindahkan ke akun dijelaskan saat login dan tidak bercampur dengan data akun lain.</p>
+<p><strong>Hasil:</strong> pengguna bisa mengenali manfaat sebelum membuat akun dan memahami data yang tersimpan.</p>
+<h2>F02 Profil gaya tubuh dan analisis opsional</h2>
+<p>Profil mencatat aktivitas, preferensi gaya, warna, kenyamanan, bujet, kondisi cuaca atau musim, tinggi badan, dan ukuran pakaian. Berat badan serta ukuran dada, pinggang, dan pinggul bersifat opsional. Preferensi kategori pakaian dapat dipilih langsung tanpa menebak gender dari foto.</p>
+<p>Analisis foto membantu memperkirakan titik wajah, pose, dan proporsi yang terlihat. Pengguna dapat memeriksa serta mengoreksi hasilnya. Perkiraan bentuk wajah dan undertone memiliki penanda ketidakpastian; warna kulit avatar dapat disesuaikan manual. Pemilihan warna tetap mengikuti selera pengguna.</p>
+<p><strong>Hasil:</strong> profil yang dapat diperbarui dan digunakan bersama oleh rekomendasi, avatar, rambut, serta panduan ukuran.</p>
+<h2>F03 Lemari digital</h2>
+<p>Pengguna menambahkan pakaian, sepatu, dan aksesori melalui foto, input manual, atau produk katalog yang ditandai sebagai sudah dimiliki. Atribut mencakup kategori, warna, pola, potongan, ukuran, fungsi, dan ketersediaan.</p>
+<p>AI membantu mengisi atribut yang terlihat. Bahan, ketebalan, dan detail yang tidak dapat dipastikan meminta konfirmasi. Pengguna dapat mengubah atau menghapus item dan melihat outfit yang memakainya.</p>
+<p><strong>Hasil:</strong> daftar barang milik pengguna yang menjadi dasar rekomendasi dan packing.</p>
+<h2>F04 K Drama Style Explorer</h2>
+<p>Pengguna memasukkan judul drama, karakter, atau deskripsi gaya. Aplikasi menampilkan look dari koleksi terkurasi dan menjelaskan warna, siluet, kategori pakaian, serta susunannya. Pengguna memilih adaptasi sesuai kegiatan, cuaca, lemari, dan bujet.</p>
+<p>Referensi dibedakan menjadi Referensi terverifikasi, Terinspirasi karakter, dan Produk serupa. Referensi yang belum dikenal diarahkan ke screenshot atau pilihan gaya terkait.</p>
+<p><strong>Hasil:</strong> inspirasi yang bisa diterapkan, dengan asal referensi dan tingkat kepastian yang jelas.</p>
+<h2>F05 Analisis screenshot dan video</h2>
+<p>Pengguna mengunggah gambar atau klip pendek, memilih orang atau frame yang dimaksud, lalu memeriksa rincian pakaian yang dikenali. Detail tertutup atau kabur tidak dianggap diketahui.</p>
+<p>Analisis menghasilkan kategori, warna, pola, potongan yang terlihat, layering, dan ciri gaya. Pengguna dapat mengoreksi hasil sebelum pencocokan dengan lemari, katalog produk, dan aset visual. Durasi, ukuran file, serta format yang didukung ditampilkan sebelum unggahan.</p>
+<p><strong>Hasil:</strong> rincian referensi dan alternatif pakaian yang dapat ditindaklanjuti.</p>
+<h2>F06 Auto Style dan pergantian item</h2>
+<p>Pengguna memilih kegiatan, gaya, cuaca atau musim, bujet tambahan, serta item yang ingin digunakan. Referensi bersifat opsional.</p>
+<p>Aplikasi menawarkan sampai tiga alternatif: Dari lemariku, Tambahan minimal, dan Dekati inspirasiku jika referensi tersedia. Gaya casual, smart casual, dan streetwear menjadi pilihan gaya. Pengguna dapat mempertahankan item tertentu dan mengganti bagian lain.</p>
+<p><strong>Hasil:</strong> outfit, cara memadukan, alasan rekomendasi, serta kekurangan barang. Sistem tidak memaksakan tiga hasil ketika batas yang dipilih tidak memungkinkan.</p>
+<h2>F07 Penilaian gaya dan panduan ukuran</h2>
+<p>Penilaian menjelaskan kemiripan referensi, kesesuaian kegiatan dan preferensi, pemanfaatan lemari, serta biaya tambahan. Panduan proporsi menawarkan alternatif sesuai tujuan tampilan pengguna.</p>
+<p>Panduan ukuran hanya diberikan jika data tubuh dan ukuran produk cukup. Informasi yang belum tersedia disebutkan. Hasil tidak menggunakan satu persentase kecocokan yang menyatukan ukuran, selera, dan cuaca tanpa definisi.</p>
+<p><strong>Hasil:</strong> alasan keputusan yang dapat diperiksa dan diperbaiki pengguna.</p>
+<h2>F08 Avatar dan pakaian 3D</h2>
+<p>Pengguna menyesuaikan avatar melalui parameter tubuh dan koreksi manual, memutar 360 derajat, melakukan zoom, membandingkan outfit, serta menampilkan atau menyembunyikan lapisan pakaian.</p>
+<p>Representasi pakaian dibedakan menjadi Model pakaian spesifik dan Model pakaian serupa. Model spesifik tersedia ketika aset pakaian tersebut disiapkan. Model serupa memakai template dengan kategori, potongan, dan warna yang mendekati. Screenshot dipetakan ke atribut dan aset yang tersedia.</p>
+<p>Rekonstruksi otomatis pakaian 3D dari sembarang screenshot menjadi jalur pengembangan tersendiri. Cakupan dan akurasinya ditampilkan ketika kemampuan tersebut tersedia; hasil template tidak diklaim sebagai rekonstruksi persis.</p>
+<p><strong>Hasil:</strong> preview siluet dan susunan pakaian dengan jenis representasi yang terbaca.</p>
+<h2>F09 Photo try on 2D</h2>
+<p>Dengan persetujuan pengguna, aplikasi memakai foto dirinya dan gambar pakaian untuk membuat preview. Pengguna dapat membandingkan, menyimpan, atau menghapus hasil. Sistem menjelaskan pemrosesan pihak ketiga sebelum mengirim foto.</p>
+<p><strong>Hasil:</strong> interpretasi penampilan dalam bentuk gambar. Preview tidak menjamin ukuran, detail produk, atau jatuh kain sama dengan kondisi nyata.</p>
+<h2>F10 Rekomendasi dan visualisasi rambut</h2>
+<p>Pengguna mengeksplorasi potongan berdasarkan preferensi, perkiraan bentuk wajah, karakter rambut yang diberikan, panjang, dan kebutuhan perawatan. Pilihan dapat dilihat melalui referensi dan aset rambut pada avatar; warna rambut dapat dieksplorasi.</p>
+<p><strong>Hasil:</strong> referensi untuk dipertimbangkan dan dibawa ke penata rambut, beserta catatan penataan.</p>
+<h2>F11 Belanja pendukung dan wishlist</h2>
+<p>Aplikasi menampilkan produk terkurasi dari Shopee dan Tokopedia, alternatif atribut serupa, harga yang tersedia, waktu pemeriksaan, serta tambahan biaya outfit. Jika produk belum ditemukan, aplikasi menyediakan tautan pencarian yang diberi label.</p>
+<p>Status dimiliki dan perlu dibeli ditampilkan per item. Harga, ukuran, dan stok yang belum terverifikasi ditandai. Tautan affiliate diberi label. Checkout dilakukan di marketplace.</p>
+<p><strong>Hasil:</strong> pengguna memahami barang pelengkap yang diperlukan dan biaya yang diketahui.</p>
+<h2>F12 Trip Stylist dan packing</h2>
+<p>Pengguna memasukkan tujuan, tanggal, durasi, kegiatan, rencana mencuci, dan batas bawaan. Aplikasi menyusun outfit per hari atau kegiatan, mengulang pemakaian barang yang sesuai, dan menghitung daftar barang unik.</p>
+<p>Untuk kondisi dingin, hasil merinci base layer, mid layer, dan outer sesuai konteks. Pengguna dapat melihat layering pada aset yang didukung. Perjalanan di luar jangkauan prakiraan memakai informasi musiman berlabel dan diperbarui mendekati keberangkatan.</p>
+<p><strong>Hasil:</strong> outfit perjalanan, jumlah barang, status dimiliki atau perlu dibeli, serta checklist sudah dikemas.</p>
+<h2>F13 Lookbook dan umpan balik</h2>
+<p>Pengguna mengelompokkan outfit untuk kantor, akhir pekan, inspirasi drama, atau perjalanan. Pengguna menandai dipakai, mengganti item, dan memberikan alasan penolakan. Preferensi berikutnya dapat menggunakan umpan balik tersebut.</p>
+<p><strong>Hasil:</strong> koleksi pribadi yang bisa digunakan ulang dan rekomendasi yang makin sesuai dengan preferensi yang diberikan.</p>
+<h2>F14 Privasi dan kontrol data</h2>
+<p>Foto analisis sementara, foto lemari tersimpan, screenshot inspirasi, parameter avatar, dan hasil visual memiliki tujuan serta kebijakan penyimpanan berbeda. Analisis di perangkat dipakai untuk alur yang mendukungnya. Penyimpanan foto tubuh memerlukan pilihan pengguna.</p>
+<p>Pengguna dapat menghapus data tersimpan sesuai cakupan yang dijelaskan. Retensi layanan pihak ketiga dan masa pembersihan cadangan dijelaskan berdasarkan implementasi. Klaim zero storage hanya digunakan untuk alur yang telah diperiksa sampai layanan pendukungnya.</p>
+<p><strong>Hasil:</strong> pengguna memahami data apa yang diproses, disimpan, dan bisa dihapus.</p>
+<h2>F15 Pengelolaan konten dan katalog</h2>
+<p>Pengembang sebagai pengelola mengatur drama, karakter, sumber look, atribut pakaian, produk, harga, tautan, serta aset 3D. Referensi memiliki sumber, status pemeriksaan, dan hak penggunaan yang sesuai. Produk dan aset yang bermasalah dapat dinonaktifkan.</p>
+<p><strong>Hasil:</strong> koreksi konten dan katalog dapat dilakukan tanpa mengubah logika aplikasi.</p>
+<h1 id="section-5">Alur pengalaman pengguna</h1>
+<h2>Memilih outfit harian</h2>
+<ol>
+<li><p>Buka sebagai guest atau masuk ke akun.</p>
+</li>
+<li><p>Pilih kegiatan, cuaca, preferensi, dan bujet tambahan.</p>
+</li>
+<li><p>Pilih item lemari yang ingin digunakan atau lengkapi beberapa item.</p>
+</li>
+<li><p>Minta rekomendasi dan bandingkan alternatif.</p>
+</li>
+<li><p>Pertahankan item yang disukai, lalu ganti bagian lain bila perlu.</p>
+</li>
+<li><p>Simpan outfit dan tandai dipakai setelah digunakan.</p>
+</li>
+</ol>
+<h2>Mengadaptasi gaya drama</h2>
+<ol>
+<li><p>Pilih drama dan karakter atau unggah screenshot.</p>
+</li>
+<li><p>Pilih look, orang, atau frame yang dimaksud.</p>
+</li>
+<li><p>Periksa rincian pakaian dan koreksi hasil.</p>
+</li>
+<li><p>Tentukan konteks pemakaian serta batas belanja.</p>
+</li>
+<li><p>Bandingkan adaptasi dari lemari dan barang pelengkap.</p>
+</li>
+<li><p>Buka visual 2D, avatar, atau photo try-on yang tersedia pada build.</p>
+</li>
+<li><p>Simpan look atau buka produk pelengkap di marketplace.</p>
+</li>
+</ol>
+<h2>Menyiapkan perjalanan</h2>
+<ol>
+<li><p>Masukkan tujuan, tanggal, kegiatan, dan rencana mencuci.</p>
+</li>
+<li><p>Periksa konteks cuaca atau informasi musiman.</p>
+</li>
+<li><p>Pilih outfit per kegiatan.</p>
+</li>
+<li><p>Periksa penggunaan ulang item dan daftar barang unik.</p>
+</li>
+<li><p>Tandai sudah dimiliki, perlu ditambahkan, dan sudah dikemas.</p>
+</li>
+</ol>
+<p>Halaman utama mengarah ke empat kebutuhan: Pilihkan outfit, Cari inspirasi, Lemariku, dan Rencanakan perjalanan. Avatar, rambut, dan belanja dapat diakses melalui hasil atau profil. Fitur yang belum tersedia tidak ditampilkan sebagai alur aktif yang berakhir tanpa hasil.</p>
+<h1 id="section-6">Prinsip rekomendasi dan visualisasi</h1>
+<p><strong>Prioritas keputusan:</strong> patuhi batas yang dipilih pengguna, manfaatkan barang yang tersedia, lalu urutkan alternatif berdasarkan preferensi dan kemiripan inspirasi. Aturan wajib dan preferensi lunak dibedakan dalam input.</p>
+<ol>
+<li><p>Identitas barang, status dimiliki, harga, dan sumber referensi harus berasal dari data yang tersedia. AI tidak membuat produk atau harga fiktif.</p>
+</li>
+<li><p>Bujet yang dihitung adalah tambahan pembelian. Barang milik sendiri tidak dihitung sebagai belanja baru. Ongkir dan biaya lain yang belum diketahui disebut terpisah.</p>
+</li>
+<li><p>Harga tidak diketahui tidak dianggap nol. Hasil belum boleh diberi label memenuhi bujet jika komponen wajib masih belum memiliki harga.</p>
+</li>
+<li><p>Item yang dipertahankan pengguna tidak berubah ketika bagian lain diganti.</p>
+</li>
+<li><p>Input yang tidak jelas meminta koreksi atau menawarkan jalur alternatif. Referensi tidak dikenal tidak memicu klaim episode atau merek tanpa sumber.</p>
+</li>
+<li><p>Foto referensi membantu mengetahui atribut yang terlihat. Bahan, ketebalan, ukuran, dan bagian tertutup tidak diasumsikan pasti.</p>
+</li>
+<li><p>Preview pakaian serupa, model pakaian spesifik, dan photo try-on diberi label berbeda. Visualisasi bukan bukti ukuran akan pas. Batas ini juga dijelaskan dalam <a href="https://support.google.com/googleshopping/answer/16253678?udm=28">panduan Google Try-On</a>.</p>
+</li>
+<li><p>Analisis warna dan bentuk tubuh memberi pilihan styling tanpa merendahkan tubuh atau melarang gaya tertentu.</p>
+</li>
+<li><p>Jika visualisasi gagal, rincian outfit yang sudah berhasil tetap dapat dibaca. Pengulangan proses berbayar harus terkendali dan tidak dipicu otomatis tanpa batas.</p>
+</li>
+<li><p>Ukuran tubuh dan data ukuran produk harus cukup sebelum panduan ukuran diberikan. Ketika tidak cukup, pengguna diarahkan memeriksa size chart.</p>
+</li>
+</ol>
+<p>MediaPipe menyediakan landmark wajah dan pose; kategori bentuk wajah dan ukuran tubuh memerlukan pemrosesan serta validasi tambahan. Lihat <a href="https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker">Face Landmarker</a> dan <a href="https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker">Pose Landmarker</a>.</p>
+<h1 id="section-7">Tech stack dan arsitektur solo project</h1>
+<p>Frontend, backend aplikasi, serta admin menggunakan satu proyek Next.js berbasis TypeScript. Backend dijalankan pada runtime Node.js melalui Route Handlers. Pemrosesan AI lokal dipisahkan ke Python. Penyederhanaan ini menggantikan server Fastify terpisah pada rancangan sebelumnya, sementara tanggung jawab backend tetap sama. <a href="https://nextjs.org/docs/app/api-reference/file-conventions/route">Dokumentasi Route Handlers</a>.</p>
+<table>
+<thead>
+<tr>
+  <th>Komponen</th>
+  <th>Teknologi</th>
+  <th>Tugas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Web dan backend utama</td>
+  <td>Next.js, React, TypeScript, Node.js</td>
+  <td>Antarmuka, akun, otorisasi, lemari, katalog, outfit, dan integrasi</td>
+</tr>
+<tr>
+  <td>Antarmuka</td>
+  <td>Tailwind CSS</td>
+  <td>Tampilan responsif dan komponen yang konsisten</td>
+</tr>
+<tr>
+  <td>Database</td>
+  <td>PostgreSQL</td>
+  <td>Data pengguna, referensi, produk, outfit, perjalanan, serta status pekerjaan</td>
+</tr>
+<tr>
+  <td>Pencarian visual</td>
+  <td>pgvector dan FashionCLIP</td>
+  <td>Embedding serta pencarian item serupa</td>
+</tr>
+<tr>
+  <td>AI lokal</td>
+  <td>Python, FastAPI, PyTorch, OpenCV</td>
+  <td>Persiapan gambar dan inference model yang dijalankan sendiri</td>
+</tr>
+<tr>
+  <td>Scan opsional</td>
+  <td>MediaPipe</td>
+  <td>Landmark wajah dan pose; di perangkat untuk alur yang didukung</td>
+</tr>
+<tr>
+  <td>Deteksi dan segmentasi</td>
+  <td>GroundingDINO dan SAM</td>
+  <td>Posisi objek serta mask pakaian bila diperlukan</td>
+</tr>
+<tr>
+  <td>Pemahaman multimodal</td>
+  <td>Gemini API</td>
+  <td>Interpretasi gambar dan permintaan serta penjelasan berbasis hasil</td>
+</tr>
+<tr>
+  <td>Avatar di browser</td>
+  <td>Three.js, React Three Fiber, Drei</td>
+  <td>Kamera, rotasi, avatar, pakaian, dan rambut</td>
+</tr>
+<tr>
+  <td>Aset 3D</td>
+  <td>Blender dan GLB atau glTF</td>
+  <td>Pembuatan dan optimasi model beserta variasinya</td>
+</tr>
+<tr>
+  <td>Photo try on</td>
+  <td>FASHN API</td>
+  <td>Pemrosesan preview pakaian pada foto</td>
+</tr>
+<tr>
+  <td>Video</td>
+  <td>FFmpeg</td>
+  <td>Ekstraksi frame klip</td>
+</tr>
+<tr>
+  <td>Antrean pekerjaan</td>
+  <td>Redis dan BullMQ</td>
+  <td>Pekerjaan analisis dan visualisasi berdurasi panjang</td>
+</tr>
+<tr>
+  <td>Media</td>
+  <td>Object storage kompatibel S3</td>
+  <td>Foto tersimpan, media sementara, hasil, dan aset</td>
+</tr>
+<tr>
+  <td>Cuaca</td>
+  <td>Open-Meteo</td>
+  <td>Prakiraan untuk konteks outfit dan perjalanan</td>
+</tr>
+<tr>
+  <td>Lingkungan layanan</td>
+  <td>Docker</td>
+  <td>Menjalankan komponen dengan konfigurasi yang konsisten</td>
+</tr>
+</tbody>
+</table>
+<p>Pilihan penyedia AI menjadi integrasi awal; versi model dan endpoint ditetapkan pada implementasi berdasarkan hasil pengujian input produk. Fitur diaktifkan sesuai tahap sehingga seluruh komponen tidak harus dijalankan sejak hari pertama.</p>
+<p>Aplikasi web mengurus akses, penyimpanan, dan keputusan berbasis data. Worker Node.js membaca antrean lalu memanggil API eksternal atau layanan Python; browser membaca status dari backend. API key berada di server. Inferensi yang berat tidak dijalankan di permintaan web pengguna.</p>
+<p>Pencarian awal dapat memakai atribut kategori, warna, dan potongan. FashionCLIP serta pgvector digunakan ketika pencarian visual diaktifkan. GroundingDINO mendeteksi objek, sedangkan SAM menyediakan tahap segmentasi; contoh integrasinya ada pada <a href="https://github.com/IDEA-Research/Grounded-Segment-Anything">Grounded Segment Anything</a>.</p>
+<h2>Data utama</h2>
+<p>Data mencakup akun, profil, parameter avatar, item lemari, referensi drama dan look, produk, aset visual, outfit beserta itemnya, wishlist, perjalanan, packing, umpan balik, serta pekerjaan AI. Outfit mengacu pada identitas barang yang sama dengan lemari dan katalog. Packing menghitung item unik dari identitas tersebut.</p>
+<h2>Menjalankan aplikasi</h2>
+<p>Gunakan lingkungan development untuk pengerjaan, staging untuk testing, dan production untuk akses pengguna. Akun serta data uji dipisahkan dari data production. Deployment mencakup web Node.js, worker ketika dibutuhkan, database, object storage, Redis, dan layanan Python pada tahap yang memerlukannya. GPU diperlukan hanya untuk model lokal yang membutuhkannya.</p>
+<p>Perubahan database disertai migrasi dan cadangan sebelum perubahan yang berisiko menghilangkan data. Sebelum rilis, periksa konfigurasi akses, alur pemulihan cadangan, log kegagalan tanpa foto atau kredensial, serta batas pemakaian layanan berbayar.</p>
+<h1 id="section-8">Urutan pengerjaan production</h1>
+<p>Pekerjaan dibagi menjadi hasil yang dapat diuji oleh satu pengembang. Setiap tahap menyelesaikan alur dari input sampai hasil; komponen teknis ditambahkan ketika tahap tersebut membutuhkannya.</p>
+<table>
+<thead>
+<tr>
+  <th>Tahap</th>
+  <th>Hasil yang dikerjakan</th>
+  <th>Syarat selesai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>0 Fondasi</td>
+  <td>Struktur proyek, data pakaian dan referensi awal, akun uji, penyimpanan, staging, serta alur contoh</td>
+  <td>Data contoh dapat ditampilkan dan disimpan; tidak ada hasil contoh yang diklaim sebagai analisis nyata</td>
+</tr>
+<tr>
+  <td>1 Lemari dan outfit</td>
+  <td>F01, F02 manual, F03, F06 dengan aturan dan atribut, F13, F14 dasar, F15 dasar</td>
+  <td>Pengguna menambah barang, mendapat outfit 2D, mengganti item, menyimpan, dan membuka ulang tanpa kehilangan data</td>
+</tr>
+<tr>
+  <td>2 Inspirasi dan belanja</td>
+  <td>F04, F05 screenshot, F07 penjelasan, F11, katalog dan sumber F15, pemrosesan AI yang diperlukan</td>
+  <td>Referensi dapat diurai atau dikoreksi; item terhubung ke lemari atau katalog; biaya dan sumber dapat diperiksa</td>
+</tr>
+<tr>
+  <td>3 Avatar 3D</td>
+  <td>F08 avatar manual, pakaian spesifik atau serupa, kontrol kamera, layering, F07 ukuran ketika datanya cukup</td>
+  <td>Aset yang didukung tampil dengan label benar; item yang tak didukung memiliki pengganti; kegagalan 3D tidak memblokir rincian outfit</td>
+</tr>
+<tr>
+  <td>4 Personalisasi visual</td>
+  <td>F02 scan wajah dan tubuh serta perkiraan warna, F09 photo try-on, F10 rambut</td>
+  <td>Pengguna bisa mengoreksi hasil; pemrosesan dan retensi dijelaskan; kegagalan dapat dipulihkan</td>
+</tr>
+<tr>
+  <td>5 Perjalanan dan video</td>
+  <td>F12, F05 video, penggunaan ulang outfit dan layering untuk perjalanan</td>
+  <td>Frame bisa dipilih; packing menghitung barang unik; konteks cuaca dan jumlah barang dapat diperiksa</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Titik go-live awal yang disarankan adalah setelah tahap 1 dan 2 memenuhi kriteria rilis.</strong> Tahap 3 sampai 5 menambahkan fitur visi lengkap secara bertahap. Jika rilis diumumkan sebagai versi lengkap, modul yang dijanjikan harus tersedia dan lolos pengujian. Rekonstruksi otomatis pakaian 3D tetap menjadi jalur riset di dalam F08 sampai cakupannya dapat dibuktikan.</p>
+<p>Pada setiap tahap, kerjakan satu alur, verifikasi, perbaiki kegagalan, lalu lanjutkan. Katalog awal dikelola manual oleh pengembang; pembaruan otomatis melalui marketplace digunakan jika akses dan kemampuan integrasinya sudah dipastikan.</p>
+<p>Urutan ini tidak menetapkan tanggal penyelesaian. Lama pekerjaan mengikuti hasil nyata, kapasitas pengembang, pembuatan aset, serta dependensi layanan.</p>
+<h1 id="section-9">Skenario pengujian pengguna</h1>
+<h2>Persiapan sesi</h2>
+<p>Catat build, URL, perangkat, browser, tanggal, tahap tersedia, dan kode peserta. Pakai akun khusus testing serta foto yang memang boleh diproses. Untuk analisis tubuh, rambut, dan photo try-on, peserta dapat menolak unggahan dan menguji jalur manual.</p>
+<p>Data latihan dapat memakai kemeja putih, kaus polos, celana hitam, dan sneakers. Bujet serta harga fixture hanya untuk testing dan diberi label. Gunakan referensi berkualitas jelas, referensi buram, dan judul drama yang tidak ada di koleksi.</p>
+<p>Jelaskan tujuan tugas, lalu biarkan peserta mencoba tanpa petunjuk tombol. Catat bagian yang memerlukan bantuan. Bila perlu bantuan untuk menyelesaikan tugas, hasil teknis bisa diperiksa tetapi hambatan penggunaan tetap dicatat.</p>
+<h2>Tugas pengguna</h2>
+<table>
+<thead>
+<tr>
+  <th>Kode</th>
+  <th>Tugas</th>
+  <th>Hasil yang diperiksa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>U01</td>
+  <td>Coba rekomendasi tanpa akun dan tanpa foto tubuh</td>
+  <td>Ada jalur guest dan manual yang bisa diselesaikan</td>
+</tr>
+<tr>
+  <td>U02</td>
+  <td>Tambahkan beberapa pakaian lalu koreksi warna atau kategori yang salah</td>
+  <td>Data berubah dan tampil kembali dengan benar</td>
+</tr>
+<tr>
+  <td>U03</td>
+  <td>Buat outfit untuk satu kegiatan memakai barang sendiri</td>
+  <td>Status dimiliki tepat; barang yang belum ada tidak diklaim tersedia</td>
+</tr>
+<tr>
+  <td>U04</td>
+  <td>Pertahankan satu item lalu ganti item lain</td>
+  <td>Pilihan yang dipertahankan tetap sama</td>
+</tr>
+<tr>
+  <td>U05</td>
+  <td>Pilih drama atau karakter terkurasi dan adaptasikan gayanya</td>
+  <td>Ciri gaya, asal referensi, dan adaptasi dapat dipahami</td>
+</tr>
+<tr>
+  <td>U06</td>
+  <td>Cari drama yang tidak dikenal dan unggah screenshot buram</td>
+  <td>Tidak ada sumber yang dikarang; tersedia langkah koreksi</td>
+</tr>
+<tr>
+  <td>U07</td>
+  <td>Periksa screenshot, pilih orang yang dimaksud, dan perbaiki rincian</td>
+  <td>Koreksi memengaruhi rekomendasi berikutnya</td>
+</tr>
+<tr>
+  <td>U08</td>
+  <td>Tetapkan bujet tambahan dan periksa produk pelengkap</td>
+  <td>Tambahan belanja terpisah dari barang sendiri; harga tak diketahui terlihat</td>
+</tr>
+<tr>
+  <td>U09</td>
+  <td>Simpan look, masuk ke akun, lalu buka ulang</td>
+  <td>Penyimpanan dan perpindahan data sesuai penjelasan</td>
+</tr>
+<tr>
+  <td>U10</td>
+  <td>Atur avatar, putar, bandingkan pakaian, dan ubah layering</td>
+  <td>Kontrol bekerja; model serupa dapat dibedakan dari model spesifik</td>
+</tr>
+<tr>
+  <td>U11</td>
+  <td>Lewati scan, lalu coba scan bila bersedia dan koreksi hasil</td>
+  <td>Scan opsional; perubahan parameter tersimpan sesuai pilihan</td>
+</tr>
+<tr>
+  <td>U12</td>
+  <td>Minta panduan ukuran untuk produk dengan dan tanpa size chart</td>
+  <td>Panduan hanya muncul ketika data cukup</td>
+</tr>
+<tr>
+  <td>U13</td>
+  <td>Buat photo try-on lalu hapus hasil tersimpan</td>
+  <td>Pemrosesan dijelaskan; hasil bisa dibandingkan dan dihapus sesuai cakupan</td>
+</tr>
+<tr>
+  <td>U14</td>
+  <td>Pilih rambut dan warna berdasarkan preferensi</td>
+  <td>Preview dan kebutuhan penataan dipahami tanpa klaim hasil pasti</td>
+</tr>
+<tr>
+  <td>U15</td>
+  <td>Unggah klip pendek lalu pilih frame untuk analisis</td>
+  <td>Frame yang dipilih menjadi input; batas file dan kegagalan terbaca</td>
+</tr>
+<tr>
+  <td>U16</td>
+  <td>Susun perjalanan dengan outfit yang memakai ulang barang</td>
+  <td>Packing menghitung barang unik dan jumlah bawaan</td>
+</tr>
+<tr>
+  <td>U17</td>
+  <td>Pilih perjalanan di luar jangkauan prakiraan</td>
+  <td>Informasi musiman dibedakan dari prakiraan</td>
+</tr>
+<tr>
+  <td>U18</td>
+  <td>Tandai outfit dipakai atau ditolak dan berikan alasan</td>
+  <td>Umpan balik tercatat; pengguna dapat mengubah preferensi</td>
+</tr>
+<tr>
+  <td>U19</td>
+  <td>Hapus item atau foto tersimpan dan periksa penjelasan penghapusan</td>
+  <td>Data yang dimaksud hilang dari tampilan dan status proses sesuai kebijakan</td>
+</tr>
+</tbody>
+</table>
+<p>Setelah tugas, tanyakan: Apakah ada outfit yang ingin kamu pakai? Apa yang masih harus kamu cari sendiri? Apakah visual membantu memilih? Item mana yang ingin kamu ganti dan mengapa? Catat jawaban, bukan hanya penilaian suka atau tidak suka.</p>
+<h1 id="section-10">Kriteria penerimaan Product Owner</h1>
+<p>Kriteria berlaku pada fitur yang diaktifkan untuk rilis tersebut. Semua hasil memerlukan bukti pada build yang diuji.</p>
+<table>
+<thead>
+<tr>
+  <th>Kode</th>
+  <th>Cakupan</th>
+  <th>Kriteria penerimaan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>P01</td>
+  <td>F01 dan F13</td>
+  <td>Guest dapat mencoba; login dan simpan tidak menghilangkan pilihan yang dipindahkan atau mencampur akun</td>
+</tr>
+<tr>
+  <td>P02</td>
+  <td>F02 dan F03</td>
+  <td>Data profil dan atribut item dapat dikoreksi; scan tidak menjadi syarat rekomendasi dasar</td>
+</tr>
+<tr>
+  <td>P03</td>
+  <td>F04 dan F15</td>
+  <td>Referensi terverifikasi punya sumber; judul tidak dikenal tidak menghasilkan episode atau merek fiktif</td>
+</tr>
+<tr>
+  <td>P04</td>
+  <td>F05</td>
+  <td>Orang atau frame yang dianalisis sesuai pilihan; detail tak terlihat tidak dinyatakan pasti</td>
+</tr>
+<tr>
+  <td>P05</td>
+  <td>F06</td>
+  <td>Batas wajib dipatuhi atau ketidakmampuan dijelaskan; item yang dipertahankan tidak berubah</td>
+</tr>
+<tr>
+  <td>P06</td>
+  <td>F07 dan F11</td>
+  <td>Total memakai harga yang tersedia dengan hitungan benar; harga tak diketahui tidak dianggap nol</td>
+</tr>
+<tr>
+  <td>P07</td>
+  <td>F07</td>
+  <td>Panduan ukuran menyebut data yang dipakai dan tidak muncul sebagai kepastian ketika data kurang</td>
+</tr>
+<tr>
+  <td>P08</td>
+  <td>F08</td>
+  <td>Model spesifik dan serupa berlabel; aset yang didukung dapat dibandingkan dan tidak mengalami tembus atau hilang yang menghalangi penilaian</td>
+</tr>
+<tr>
+  <td>P09</td>
+  <td>F09 dan F10</td>
+  <td>Preview berfungsi pada cakupan yang diumumkan; perbedaan visual dan kegagalan dapat dilaporkan</td>
+</tr>
+<tr>
+  <td>P10</td>
+  <td>F12</td>
+  <td>Satu barang yang dipakai pada beberapa hari tidak dihitung sebagai beberapa barang berbeda; jumlah yang sengaja ditambah tetap dihitung</td>
+</tr>
+<tr>
+  <td>P11</td>
+  <td>F12</td>
+  <td>Prakiraan dan informasi musiman dibedakan; layering dikaitkan dengan konteks yang dimasukkan</td>
+</tr>
+<tr>
+  <td>P12</td>
+  <td>F14</td>
+  <td>Media, parameter, dan catatan proses mengikuti tujuan serta retensi yang dijelaskan; akses antar akun ditolak</td>
+</tr>
+<tr>
+  <td>P13</td>
+  <td>F11 dan F15</td>
+  <td>Tautan produk dan pencarian dibedakan; affiliate ditandai; produk rusak dapat dinonaktifkan</td>
+</tr>
+<tr>
+  <td>P14</td>
+  <td>Semua fitur aktif</td>
+  <td>Alur utama dapat digunakan di HP; tombol, label, pesan gagal, dan akses keyboard dapat dipahami serta dioperasikan</td>
+</tr>
+</tbody>
+</table>
+<h2>Pengujian kegagalan dan pemulihan</h2>
+<ul>
+<li><p>Masukkan file salah format, terlalu besar, buram, dan berisi beberapa orang. Sistem menolak atau meminta pilihan tanpa kehilangan data yang sudah diisi.</p>
+</li>
+<li><p>Coba lemari kosong dan batas bujet yang tidak mungkin dipenuhi. Sistem menjelaskan kendala serta menawarkan langkah lanjut.</p>
+</li>
+<li><p>Simulasikan harga atau tautan yang sudah tidak berlaku. Hasil tidak mengklaim informasi itu masih pasti.</p>
+</li>
+<li><p>Simulasikan layanan AI gagal, timeout, koneksi putus, dan permintaan berulang. Status pekerjaan dapat diperiksa; simpan tidak menggandakan outfit dan proses berbayar tidak berjalan tanpa batas.</p>
+</li>
+<li><p>Simulasikan aset 3D tidak tersedia atau gagal dimuat. Rincian outfit tetap terbaca.</p>
+</li>
+<li><p>Periksa akses objek milik akun uji lain. Foto, profil, lemari, dan outfit pribadi tidak dapat dibaca atau diubah.</p>
+</li>
+<li><p>Jalankan penghapusan data sesuai alur dan periksa penyimpanan serta pekerjaan yang masih tertunda.</p>
+</li>
+<li><p>Coba pemulihan cadangan di lingkungan uji sebelum mengandalkannya untuk data production.</p>
+</li>
+</ul>
+<h1 id="section-11">Pencatatan hasil dan keputusan rilis</h1>
+<p>Satu catatan hasil memuat kode skenario, build, kode peserta atau penguji, perangkat, langkah, hasil aktual, status, bukti, dan tindak lanjut. Gunakan kode peserta agar lembar hasil tidak memuat data tubuh atau foto pribadi yang tidak diperlukan.</p>
+<table>
+<thead>
+<tr>
+  <th>Skenario dan build</th>
+  <th>Hasil aktual dan bukti</th>
+  <th>Status</th>
+  <th>Tindak lanjut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Diisi saat sesi</td>
+  <td>Catat tindakan, hambatan, dan bukti yang relevan</td>
+  <td>Belum diuji</td>
+  <td>Catat perbaikan atau pengujian ulang</td>
+</tr>
+</tbody>
+</table>
+<h2>Ukuran manfaat</h2>
+<p>Indikator utama adalah peserta yang memilih dan kemudian benar-benar memakai setidaknya satu outfit rekomendasi. Pemilihan dapat dicatat saat sesi; pemakaian dicatat melalui tindak lanjut setelah pengguna memiliki kesempatan memakai outfit.</p>
+<p>Indikator pendukung mencakup waktu sampai memilih, tugas yang selesai tanpa bantuan, alasan penolakan, penggunaan ulang lemari, dan apakah visualisasi membantu keputusan. Product Owner juga mencatat tingkat keberhasilan proses, latensi, dan biaya per hasil yang berhasil beserta pengulangan. Ambang kinerja dan batas biaya ditetapkan setelah pengukuran awal dan sebelum keputusan rilis.</p>
+<h2>Keputusan rilis</h2>
+<p>Rilis tahap tertentu dapat dilanjutkan ketika semua skenario wajib untuk fitur aktif telah diuji, kriteria kritis lulus, dan temuan yang tersisa dicatat. Masalah akses data, kehilangan data, hitungan belanja keliru, atau alur inti yang tidak dapat diselesaikan menghalangi rilis. Temuan kecil dapat diterima oleh pemilik proyek dengan alasan dan tindak lanjut yang tercatat.</p>
+<p>Pengembang menjalankan pemeriksaan teknis; pengguna menilai keterpakaian hasil; Product Owner memutuskan penerimaan. Pada solo project, pengembang dan PO dapat orang yang sama, tetapi bukti penggunaan tetap berasal dari sesi pengguna.</p>
+<p>Keputusan dicatat sebagai Lanjut rilis, Perbaiki lalu uji ulang, atau Tunda fitur tertentu. Persetujuan konsep versi 1.0 tidak berarti aplikasi sudah lolos pengujian atau siap go-live.</p>
+<h1 id="section-12">Referensi teknis</h1>
+<ul>
+<li><p><a href="https://nextjs.org/docs/app/api-reference/file-conventions/route">Next.js Route Handlers</a> mendasari backend dalam proyek web yang sama.</p>
+</li>
+<li><p><a href="https://fastapi.tiangolo.com/">FastAPI</a> menjadi layanan Python untuk pemrosesan model lokal.</p>
+</li>
+<li><p><a href="https://docs.bullmq.io/">BullMQ</a> menyediakan antrean dan worker untuk pekerjaan latar belakang.</p>
+</li>
+<li><p><a href="https://r3f.docs.pmnd.rs/tutorials/loading-models">React Three Fiber</a> mendukung pemuatan aset model 3D.</p>
+</li>
+<li><p><a href="https://github.com/patrickjohncyh/fashion-clip">FashionCLIP</a> dan <a href="https://github.com/pgvector/pgvector">pgvector</a> mendasari representasi serta pencarian kemiripan.</p>
+</li>
+<li><p><a href="https://ai.google.dev/gemini-api/docs/image-understanding">Gemini image understanding</a> menyediakan kemampuan pemahaman gambar pada integrasi awal.</p>
+</li>
+<li><p><a href="https://docs.fashn.ai/api-reference/tryon-v1-6">FASHN Virtual Try-On</a> menyediakan endpoint preview foto. <a href="https://docs.fashn.ai/api-overview/data-retention-privacy">Retensi dan privasi FASHN</a> perlu diterapkan sesuai endpoint dan konfigurasi yang digunakan.</p>
+</li>
+<li><p><a href="https://open-meteo.com/en/docs">Open-Meteo</a> menyediakan data prakiraan untuk konteks cuaca.</p>
+</li>
+<li><p><a href="https://smpl-x.is.tue.mpg.de/modellicense.html">Lisensi SMPL-X</a> membedakan penggunaan penelitian dan komersial jika model tersebut dipilih. Aset avatar dan pakaian yang digunakan harus memiliki hak penggunaan yang sesuai.</p>
+</li>
+</ul>
+</article></main></body></html>
