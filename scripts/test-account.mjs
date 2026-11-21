@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 
 const testUrl = process.env.STYLEFIT_TEST_DATABASE_URL;
 const database = testUrl && URL.parse(testUrl);
@@ -9,12 +10,15 @@ if (!database || !["postgres:", "postgresql:"].includes(database.protocol)
   process.exit(1);
 }
 
-const env = { ...process.env, DATABASE_URL: testUrl, STYLEFIT_ACCOUNT_TEST: "1" };
 for (const args of [
   ["run", "db:migrate"],
   ["run", "test:e2e", "--", "--project=desktop", "--workers=1"],
   ["run", "test:e2e", "--", "--project=mobile-390", "--workers=1"],
 ]) {
+  const env = {
+    ...process.env, DATABASE_URL: testUrl, STYLEFIT_ACCOUNT_TEST: "1",
+    STYLEFIT_ADMIN_EMAIL: `admin-${randomUUID()}@example.test`,
+  };
   const result = spawnSync("npm", args, { env, stdio: "inherit" });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }

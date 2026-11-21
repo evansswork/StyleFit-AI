@@ -22,6 +22,20 @@
       "when": 1795297086294,
       "tag": "0002_profile_preferences",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795297326794,
+      "tag": "0003_inspiration_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795297467065,
+      "tag": "0004_inspiration_top_color",
+      "breakpoints": true
     }
   ]
 }

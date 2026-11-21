@@ -46,7 +46,7 @@ test("an account keeps wardrobe, looks, and feedback private across visits", asy
   await page.getByRole("button", { name: "Tambahkan pakaian" }).click();
   await page.getByRole("link", { name: "Masuk untuk menyimpan lemari" }).click();
 
-  const email = "wardrobe-" + crypto.randomUUID() + "@example.test";
+  const email = process.env.STYLEFIT_ADMIN_EMAIL!;
   await register(page, request, email);
   await logIn(page, email);
   await expect(page.getByText("Kemeja pribadi", { exact: true })).toHaveCount(0);
@@ -90,6 +90,9 @@ test("an account keeps wardrobe, looks, and feedback private across visits", asy
     await expect(second.getByText("Kemeja akun pertama", { exact: true })).toHaveCount(0);
     await second.getByRole("link", { name: "Lookbook", exact: true }).click();
     await expect(second.getByRole("heading", { name: "Belum ada outfit tersimpan" })).toBeVisible();
+    await second.goto("/admin/inspirasi");
+    await expect(second.getByRole("heading", { name: "Akses admin diperlukan" })).toBeVisible();
+    await expect(second.getByRole("form", { name: "Tambah inspirasi" })).toHaveCount(0);
   } finally {
     await other.close();
   }
@@ -117,6 +120,30 @@ test("an account keeps wardrobe, looks, and feedback private across visits", asy
   await page.getByRole("link", { name: "Kembali ke stylist" }).click();
   await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("smart-casual");
   await expect(page.getByRole("combobox", { name: "Konteks cuaca", exact: true })).toHaveValue("cool");
+  await page.getByRole("link", { name: "Profil", exact: true }).click();
+  await page.getByRole("link", { name: "Kelola inspirasi" }).click();
+  const slug = "uji-" + crypto.randomUUID();
+  const title = "Gaya kampus " + slug;
+  const create = page.getByRole("form", { name: "Tambah inspirasi" });
+  await create.getByLabel("Slug", { exact: true }).fill(slug);
+  await create.getByLabel("Judul inspirasi").fill(title);
+  await create.getByLabel("Nama drama").fill("Drama fixture");
+  await create.getByLabel("Ide padu padan").fill("Coba kemeja polos dari lemari.");
+  await create.getByLabel("Tautan sumber").fill("https://example.test/drama");
+  await create.getByRole("checkbox", { name: "Tampilkan di inspirasi" }).check();
+  await create.getByRole("button", { name: "Simpan inspirasi" }).click();
+  await expect(create.getByRole("status")).toContainText("Inspirasi tersimpan");
+  await page.getByRole("link", { name: "Inspirasi", exact: true }).click();
+  await expect(page.getByRole("heading", { name: title })).toBeVisible();
+  await page.goto("/admin/inspirasi");
+  const editor = page.getByRole("form", { name: "Edit " + title });
+  await editor.getByRole("checkbox", { name: "Tampilkan di inspirasi" }).uncheck();
+  await editor.getByRole("button", { name: "Simpan inspirasi" }).click();
+  await expect(editor.getByRole("status")).toContainText("Inspirasi tersimpan");
+  await page.getByRole("link", { name: "Inspirasi", exact: true }).click();
+  await expect(page.getByRole("heading", { name: title })).toHaveCount(0);
+  await page.goto("/stylist?inspiration=" + slug);
+  await expect(page.getByText("Inspirasi ini belum tersedia.")).toBeVisible();
   await page.getByLabel("Nama pakaian", { exact: true }).fill("Item khusus akun");
   await page.getByRole("button", { name: "Tambahkan pakaian" }).click();
   await expect(page.getByRole("button", { name: "Edit Item khusus akun" })).toBeVisible();

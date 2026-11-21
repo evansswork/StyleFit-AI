@@ -66,3 +66,9 @@ Urutan berikutnya: UAT guest dan perbaikan yang ditemukan; T10-T13 untuk akun/pe
 The account sandbox was tested with local PostgreSQL and Mailpit. The guest suite passed all nine browser runs, and the account suite passed all four runs across desktop and a 390 px mobile viewport. The latter covers verification, password reset, explicit import, per-account wardrobe and lookbook isolation, reload persistence, profile preferences, feedback, and handling a deleted garment in a saved outfit. The draft stays in browser memory until the user chooses to save it.
 
 The studio and landing use Sunrise Through the Rain Concept Idea as their visual reference. The label matches the owner's requested title. No owner test session was needed for this milestone. The evidence above comes from automated browser scenarios and does not measure outfit preferences or public SMTP delivery.
+
+## Curated inspiration follow-up, 22 November 2026
+
+Lint, type checking, all 27 configuration and unit checks, database migrations, and the optimized build passed. All 12 guest browser runs passed at 1440, 390, and 360 px. The new scenario verifies the sourced concept title, unknown title recovery, keyboard search, and wardrobe continuity through the stylist handoff. Desktop and 360 px screenshots were visually reviewed.
+
+All four account browser runs passed. Coverage includes an ordinary account denied access to the editor, the allowed account publishing and unpublishing a fixture, and a stale inspiration link recovering to the regular stylist. Tests used disposable addresses and local Mailpit. Only the built-in editorial inspiration ships by default.

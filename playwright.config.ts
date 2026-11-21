@@ -4,6 +4,7 @@ const accountTest = process.env.STYLEFIT_ACCOUNT_TEST === "1";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  outputDir: accountTest ? "test-results/account" : "test-results",
   testMatch: accountTest ? "**/account.spec.ts" : "**/stylefit.spec.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

@@ -72,3 +72,14 @@ export const savedOutfit = pgTable("saved_outfit", {
   note: text("note").default("").notNull(),
   createdAt: time("created_at").defaultNow().notNull(),
 }, table => [unique("saved_outfit_selection_unique").on(table.userId, table.style, table.weather, table.itemIds)]);
+
+export const inspiration = pgTable("inspiration", {
+  slug: text("slug").primaryKey(),
+  title: text("title").notNull(),
+  drama: text("drama").notNull(),
+  stylingNote: text("styling_note").notNull(),
+  sourceUrl: text("source_url").notNull(),
+  style: text("style").$type<Style>().notNull(),
+  topColor: text("top_color"),
+  active: boolean("active").default(false).notNull(),
+});

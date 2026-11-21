@@ -165,3 +165,9 @@ Keputusan dicatat sebagai Lanjut rilis, Perbaiki lalu uji ulang, atau Tunda fitu
 ## Build guest berbasis aturan
 
 Cakupan aktif adalah F00 penuh, serta bagian guest/manual F01/F03/F06/F07/F14. U20-U21 dapat diuji lengkap pada build ini. Account and lookbook integration covers U01–U03, U09, U18 and the manual wardrobe portion of U19. Product catalog, media and 3D checks remain tied to their own releases. Hasil otomatis dicatat di RELEASE_REVIEW; status sesi pengguna tetap Belum diuji sampai pemilik atau peserta benar-benar mencoba.
+
+## Curated inspiration coverage
+
+- Guest browser checks cover title search, unknown results, source links, and carrying the wardrobe through the stylist handoff.
+- Account browser checks cover editor authorization, publishing, and unpublishing. An unpublished entry is absent from the public catalog and its direct link recovers to the stylist.
+- Domain checks cover curated color preferences and verify that a locked garment takes priority.

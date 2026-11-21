@@ -116,3 +116,26 @@ test("invalid query values recover to known items and keyboard controls work", a
   }
   await page.screenshot({ path: `test-results/landing-${test.info().project.name}.png`, fullPage: true, animations: "disabled" });
 });
+
+test("guest can open a sourced inspiration and keep their own wardrobe in the stylist", async ({ page }) => {
+  await page.goto("/stylist");
+  const form = page.getByRole("form", { name: "Form pakaian" });
+  await form.getByLabel("Nama pakaian", { exact: true }).fill("Kemeja dari lemariku");
+  await form.getByRole("button", { name: "Tambahkan pakaian" }).click();
+  await page.getByRole("link", { name: "Inspirasi", exact: true }).click();
+  await page.getByRole("searchbox", { name: "Judul drama atau inspirasi" }).fill("Judul belum tersedia");
+  await page.getByRole("button", { name: "Cari", exact: true }).click();
+  await expect(page.getByRole("link", { name: "Buat gaya dari lemarimu" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sunrise Through the Rain Concept Idea" })).toHaveCount(0);
+  const search = page.getByRole("searchbox", { name: "Judul drama atau inspirasi" });
+  await search.fill("SUNSHINE");
+  await search.press("Enter");
+  await expect(page.getByRole("heading", { name: "Sunrise Through the Rain Concept Idea" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: `test-results/inspiration-${test.info().project.name}.png`, fullPage: true, animations: "disabled" });
+  await expect(page.getByRole("link", { name: "Sumber judul" })).toHaveAttribute("href", "https://www.netflix.com/id-en/title/83112494");
+  await page.getByRole("link", { name: "Coba gaya Smart casual" }).click();
+  await expect(page.getByRole("combobox", { name: "Gaya", exact: true })).toHaveValue("smart-casual");
+  await expect(page.getByText("Ide awal · Sunrise Through the Rain Concept Idea.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Edit Kemeja dari lemariku" })).toBeVisible();
+});

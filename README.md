@@ -2,7 +2,7 @@
 
 Personal stylist yang menyusun kombinasi dari pakaian yang kamu punya. Rekomendasi memakai mesin aturan sendiri. Guest dapat mencoba tanpa login atau database.
 
-**Status:** landing dan stylist guest tersedia. Akun lokal, profil, lemari tersimpan, dan lookbook dapat diaktifkan dengan PostgreSQL dan Mailpit. Hosting publik dan pengiriman email sungguhan masih tahap berikutnya. Detail ada di [RELEASE_REVIEW.md](RELEASE_REVIEW.md).
+**Status:** the landing, guest stylist, and curated inspiration search are available. PostgreSQL and Mailpit enable local accounts, saved wardrobes, lookbooks, and the inspiration editor. Hosting publik dan pengiriman email sungguhan masih tahap berikutnya. Detail ada di [RELEASE_REVIEW.md](RELEASE_REVIEW.md).
 
 ## Menjalankan
 
@@ -34,12 +34,16 @@ Build server Next.js standar tidak memerlukan Vercel. `npm run start` memakai bu
 
 Preview adalah ilustrasi kategori dan warna 2D. Bukan model pakaian spesifik, simulasi ukuran, atau photo try-on. Konteks tropis/sejuk adalah input manual; bukan cuaca live atau panduan winter.
 
+Search by title on `/inspirasi`. Opening a result passes its style and optional top color to the stylist, where it uses the same wardrobe. The source links identify each drama title. The styling notes are editorial adaptations.
+
 ## Local account environment
 
 1. Run a dedicated PostgreSQL database and a separate test database whose name ends in `_test`. Both must be reachable through loopback.
 2. Run Mailpit on loopback with SMTP port 1025 and HTTP port 8025.
 3. Copy `.env.example` to `.env.local`. Set `AUTH_ENABLED=true`, fill both database URLs, and set `BETTER_AUTH_SECRET` to a fresh random value of at least 32 characters. Keep `BETTER_AUTH_URL` at `http://127.0.0.1:3000` for the default local server.
 4. Run `npm run db:migrate` and `npm run dev`. Open `/akun` and register with an address such as `review@example.test`. Open Mailpit at `http://127.0.0.1:8025` for verification or reset.
+
+To edit the inspiration catalog, set `STYLEFIT_ADMIN_EMAIL` to the single verified account allowed to publish or unpublish entries. Keep it empty to disable editing. Open `/admin/inspirasi` when signed in with that account.
 
 Run `npm run test:account` after building. It migrates the dedicated test database and verifies the account flows at desktop and mobile widths. GitHub Actions starts isolated PostgreSQL and Mailpit containers for the same checks.
 

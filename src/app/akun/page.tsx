@@ -15,6 +15,7 @@ export default async function AccountPage({ searchParams }: {
   const query = await searchParams;
   const resetToken = typeof query.token === "string" && query.token.length <= 256 ? query.token : undefined;
   const enabled = Boolean(accountServices());
+  const editorEmail = process.env.STYLEFIT_ADMIN_EMAIL?.trim().toLowerCase();
   let profile: Awaited<ReturnType<typeof readProfile>> = null;
   let failed = false;
   if (enabled && !resetToken) {
@@ -33,7 +34,11 @@ export default async function AccountPage({ searchParams }: {
       </div>
       {!enabled ? <section className="panel"><h2>Akun belum aktif</h2><p>Stylist tetap tersedia untuk dicoba sebagai guest.</p></section>
         : failed ? <p className="error-message" role="alert">Akun belum bisa dimuat. Muat ulang untuk mencoba lagi.</p>
-        : profile ? <ProfileForm profile={profile} />
+        : profile ? <>
+          <ProfileForm profile={profile} />
+          {editorEmail && profile.email.toLowerCase() === editorEmail &&
+            <Link href="/admin/inspirasi" className="text-button account-back">Kelola inspirasi</Link>}
+        </>
         : <AccountForm resetToken={resetToken} invalidLink={Boolean(query.error)} verified={query.verified === "1"} />}
       <Link href="/stylist" className="text-button account-back">Kembali ke stylist</Link>
     </main>

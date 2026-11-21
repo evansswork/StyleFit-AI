@@ -76,3 +76,7 @@ Rute tahap lanjut hanya diaktifkan ketika alurnya tersedia. Area publik menjelas
 Gunakan elemen semantik, focus terlihat, label yang terhubung, alt text yang menjelaskan item, dan area sentuh minimal 44 px untuk kontrol utama. Uji desktop serta lebar 360 px dan 390 px tanpa isi penting terpotong. Konten dinamis diumumkan seperlunya tanpa memindahkan fokus secara mengejutkan.
 
 Sebelum menyerahkan perubahan UI, coba tugas L01 sampai L06 pada PRD, U20 dan U21 pada TESTING, serta skenario fitur terkait. Simpan bukti screenshot atau rekaman tanpa data pribadi jika alat tersedia. Jangan menyebut aksesibilitas atau performa sudah lulus berdasarkan inspeksi kode saja.
+
+## Inspiration explorer
+
+Use the existing page margins, serif headings, and warm panels. The search accepts a drama or inspiration title. An empty result links into the wardrobe stylist. The photo keeps its 16:9 aspect ratio on the source card. Each card separates the show title, the editorial styling note, and its source link. The handoff shows the selected inspiration and preserves the wardrobe during client-side navigation.

@@ -27,6 +27,7 @@ export type StylingRequest = {
   weather: Weather;
   budget: number;
   locked?: Selection;
+  referenceTopColor?: string;
 };
 export type StylingResult = { outfits: Outfit[]; error: string | null };
 
@@ -35,12 +36,13 @@ export const slotNames: Record<Slot, string> = {
 };
 export const styleNames: Record<Style, string> = { casual: "Casual", "smart-casual": "Smart casual" };
 export const weatherNames: Record<Weather, string> = { tropical: "Tropis", cool: "Sejuk" };
+export const garmentColors = { putih: "#f3f4f0", hitam: "#303941", biru: "#8cacc9", abu: "#899399", hijau: "#71877a", merah: "#b56d75" };
 export const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
   style: "currency", currency: "IDR", maximumFractionDigits: 0,
 }).format(amount);
 
 export function generateOutfits(request: StylingRequest): StylingResult {
-  const { items, style, weather, budget, locked = {} } = request;
+  const { items, style, weather, budget, locked = {}, referenceTopColor } = request;
   const fail = (error: string): StylingResult => ({ outfits: [], error });
   if (!Number.isSafeInteger(budget) || budget < 0 || budget > 1_000_000_000) {
     return fail("Bujet harus berupa rupiah utuh antara 0 dan 1 miliar.");
@@ -83,7 +85,8 @@ export function generateOutfits(request: StylingRequest): StylingResult {
     const owned = chosen.filter(item => item.source === "wardrobe").length;
     // shortcut: prefer matching/neutral colors; evaluate richer color rules with user feedback.
     const colors = new Set(chosen.map(item => item.color));
-    const score = owned * 1000 - purchases.length * 100 - unknownPrices.length * 10 - colors.size;
+    const followsReference = Boolean(referenceTopColor) && chosen.some(item => item.slot === "top" && item.color === referenceTopColor);
+    const score = owned * 1000 - purchases.length * 100 - unknownPrices.length * 10 - colors.size + (followsReference ? 5 : 0);
     const outfit: Outfit = {
       items: chosen,
       knownAdditionalCost,
@@ -92,6 +95,7 @@ export function generateOutfits(request: StylingRequest): StylingResult {
       reasons: [
         `${styleNames[style]} untuk konteks ${weatherNames[weather].toLowerCase()} berdasarkan atribut yang dimasukkan.`,
         weather === "cool" ? "Outer ditambahkan untuk layering ringan; bukan panduan pakaian winter." : "Tanpa outer agar kombinasi lebih ringan untuk konteks tropis.",
+        ...(followsReference ? ["Warna atasan mengikuti ide awal yang kamu pilih."] : []),
         owned ? `${owned} item berasal dari lemarimu; harga beli lamanya tidak dihitung sebagai belanja baru.` : "Kombinasi ini tidak memakai barang dari lemarimu.",
         ...(chosen.some(item => item.source === "demo") ? ["Item contoh adalah ilustrasi pilihan, bukan barang yang diklaim kamu miliki."] : []),
         ...(unknownPrices.length ? ["Harga tambahan belum lengkap; outfit belum dapat dinyatakan memenuhi bujet."] : []),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateOutfits, type Item, type StylingRequest } from "../../src/features/styling/engine";
+import { garmentColors, generateOutfits, type Item, type StylingRequest } from "../../src/features/styling/engine";
 import { changeDemoContext, demoHref, demoItems, parseDemoQuery, preset } from "../../src/features/demo/data";
 
 const owned = demoItems.map(item => ({ ...item, source: "wardrobe" as const }));
@@ -22,6 +22,12 @@ describe("styling engine", () => {
     const result = generateOutfits({ ...base, locked: { top: "tee-blue" } });
     expect(result.outfits).not.toHaveLength(0);
     expect(result.outfits.every(outfit => outfit.items.some(item => item.id === "tee-blue"))).toBe(true);
+  });
+  it("prefers a curated reference color after enforcing wardrobe locks", () => {
+    const request = { ...base, referenceTopColor: garmentColors.putih };
+    expect(generateOutfits(request).outfits[0].items.find(item => item.slot === "top")?.id).toBe("tee-white");
+    expect(generateOutfits(request).outfits[0].reasons).toContain("Warna atasan mengikuti ide awal yang kamu pilih.");
+    expect(generateOutfits({ ...request, locked: { top: "tee-blue" } }).outfits[0].items.find(item => item.slot === "top")?.id).toBe("tee-blue");
   });
   it("does not silently unlock a conflicting item", () => {
     const result = generateOutfits({ ...base, style: "smart-casual", locked: { top: "tee-blue" } });

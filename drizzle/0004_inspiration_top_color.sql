@@ -1,0 +1,1 @@
+ALTER TABLE "inspiration" ADD COLUMN "top_color" text;

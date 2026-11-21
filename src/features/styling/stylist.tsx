@@ -10,20 +10,21 @@ import { changeDemoContext, demoItems, preset, type DemoState } from "../demo/da
 import { useGuestWardrobe } from "../wardrobe/guest-wardrobe";
 import { changeAccountWardrobe } from "@/server/wardrobe-actions";
 import { saveOutfit } from "@/server/lookbook-actions";
-import { generateOutfits, rupiah, slotNames, slots, type Item, type Outfit, type Selection, type Slot, type Style, type Weather } from "./engine";
+import type { Inspiration } from "../inspiration/catalog";
+import { garmentColors as colors, generateOutfits, rupiah, slotNames, slots, type Item, type Outfit, type Selection, type Slot, type Style, type Weather } from "./engine";
 
-const colors = { putih: "#f3f4f0", hitam: "#303941", biru: "#8cacc9", abu: "#899399", hijau: "#71877a", merah: "#b56d75" };
 type Draft = { name: string; slot: Slot; color: string; style: "both" | Style; weather: "both" | Weather };
 const emptyDraft: Draft = { name: "", slot: "top", color: colors.putih, style: "both", weather: "both" };
 const auth = createAuthClient();
 type SavedWardrobe = { id: string; name: string; items: Item[] };
 
-export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, accountUnavailable }: {
+export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, accountUnavailable, inspiration }: {
   initialDemo: DemoState;
   startWithDemo: boolean;
   accountsEnabled: boolean;
   account: SavedWardrobe | null;
   accountUnavailable: boolean;
+  inspiration?: Inspiration;
 }) {
   const [isDemo, setIsDemo] = useState(startWithDemo);
   const { items: guestItems, setItems: setGuestItems } = useGuestWardrobe();
@@ -160,7 +161,8 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     setPreviewIndex(0);
     setSavedSelection(null);
     if (!/^\d+$/.test(budget)) { setError("Isi bujet dengan rupiah utuh, minimal 0."); setOutfits([]); return; }
-    const result = generateOutfits({ items, style, weather, budget: Number(budget), locked });
+    const result = generateOutfits({ items, style, weather, budget: Number(budget), locked,
+      referenceTopColor: isDemo ? undefined : inspiration?.topColor ?? undefined });
     setOutfits(result.outfits); setError(result.error || "");
     if (result.outfits.length) setMessage(`${result.outfits.length} kombinasi tersedia dari ${isDemo ? "koleksi contoh" : "lemarimu"}.`);
   }
@@ -188,6 +190,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     <div className="stylist-intro">
       <h1>Hari ini, <em>pakai apa?</em></h1>
       <p>Pilih gaya dan cuaca, lalu susun outfit dari isi lemarimu.</p>
+      {inspiration && <p><strong>Ide awal · {inspiration.title}.</strong> {inspiration.stylingNote}</p>}
     </div>
     <div className="stylist-grid">
       <div className="stylist-input">

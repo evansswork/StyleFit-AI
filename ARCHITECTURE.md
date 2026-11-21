@@ -136,3 +136,9 @@ ESLint 9.39.5 dipin karena peer dependencies plugin import/React/a11y pada konfi
 Better Auth verifies email and validates the session at each account operation. The server scopes every profile, wardrobe and lookbook query to that session. Mutations also check that the active session matches the account rendered in the tab. Registration, verification and password reset use a loopback SMTP sandbox. Public delivery and a public origin need a separate setup.
 
 Drizzle migrations store accounts, wardrobe items, preferences and saved outfits. Guest imports use stable item IDs and a per-account transaction. Retrying the same import preserves existing items. Concurrent inserts respect the wardrobe limit. Saved outfits use IDs from the current wardrobe and deduplicate the same selection and context. A saved outfit shows missing items when a wardrobe entry has been deleted. Feedback and notes are stored with the look for later review.
+
+## Curated inspiration catalog
+
+The public explorer and stylist resolve published entries on the server. The bundled inspiration works without PostgreSQL. In an account-enabled environment, a row with the same slug overrides the bundled entry, including when unpublished. Catalog writes check the verified session against `STYLEFIT_ADMIN_EMAIL`; a stale form from another session is rejected.
+
+Source URLs and editorial notes are data. The stylist uses the selected style and a small preference for the matching top color. Availability, locks, ownership, and budget rules stay authoritative.
