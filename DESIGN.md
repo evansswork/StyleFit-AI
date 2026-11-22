@@ -63,7 +63,7 @@ Rute tahap lanjut hanya diaktifkan ketika alurnya tersedia. Area publik menjelas
 
 ## Keadaan komponen
 
-- Stylist memakai dua kolom seimbang pada desktop. Foto inspirasi tampil sebelum ada outfit. Setelah kombinasi dibuat, pengguna dapat memilih alternatif yang tampil di preview. Di HP, tautan dari form membawa pengguna langsung ke judul hasil. Hasil lama dibersihkan saat data yang mendasarinya berubah.
+- Stylist memasangkan kolom input dengan papan outfit di desktop dan menumpuknya di HP. Status kategori lemari mengikuti gaya dan cuaca saat ini. Form memakai kategori pertama yang belum cocok sebagai pilihan awal. Pengaturan gaya dan cuaca tiap pakaian bisa dibuka bila perlu. Tombol buat kombinasi berada sebelum daftar item. Jika semua kategori sudah siap, tombol muncul sebelum form tambah pakaian. Tautan hasil serta kembali ke lemari memindahkan fokus ke judul tujuan. Foto inspirasi tampil sebelum ada outfit. Setelah kombinasi dibuat, pengguna dapat memilih alternatif yang tampil di preview. Hasil lama dibersihkan saat data yang mendasarinya berubah.
 - Item pakaian memperlihatkan gambar, kategori, warna, status dimiliki, dan tindakan yang relevan.
 - Hasil outfit memperlihatkan kombinasi, alasan, kebutuhan tambahan, serta visual yang tersedia. Harga belum diketahui ditulis apa adanya.
 - Form memiliki label, satuan, validasi dekat field, dan data yang tetap ada setelah kegagalan yang dapat dipulihkan.

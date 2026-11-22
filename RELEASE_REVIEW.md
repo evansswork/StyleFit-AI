@@ -82,3 +82,9 @@ The Shopee search destination responded with HTTP 200. The Tokopedia URL was gen
 ## Editable reference preferences, 22 November 2026
 
 The stylist applies an edited or cleared top-color preference immediately to the next outfit and shopping search. The editorial source entry keeps its original value. The unit suite verifies the corrected ranking and lock priority. The guest browser suite verifies that changing the preference clears old shopping results and the next search uses the selected color. All 27 configuration and unit checks, 15 guest browser runs, and four account browser runs passed on the optimized build.
+
+## Stylist layout pass, 22 November 2026
+
+The wardrobe shows which categories match the current style and weather. An untouched add form suggests the next missing category. Optional garment preferences stay in a disclosure. Once the wardrobe is ready, the primary action moves above the add form. Links move focus between the wardrobe and the result.
+
+Lint, type checking, 27 configuration and unit checks, the production build, 15 guest browser runs, and four account browser runs passed. The guest scenarios verify sequential category defaults, readiness after corrections and weather changes, the primary action order, lock preservation, and keyboard links in both directions. The layout was visually reviewed from Chromium screenshots at 1440, 390, and 360 px. A WebKit check at 390 px also passed for touch entry, category defaults, result navigation, and cool-weather mode. Physical devices and participant usability sessions were outside this pass.

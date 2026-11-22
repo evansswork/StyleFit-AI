@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createAuthClient } from "better-auth/react";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { OutfitArt } from "@/components/outfit-art";
 import { changeDemoContext, demoItems, preset, type DemoState } from "../demo/data";
 import { useGuestWardrobe } from "../wardrobe/guest-wardrobe";
@@ -12,10 +12,10 @@ import { changeAccountWardrobe } from "@/server/wardrobe-actions";
 import { saveOutfit } from "@/server/lookbook-actions";
 import { ShoppingLinks } from "./shopping-links";
 import type { Inspiration } from "../inspiration/catalog";
-import { garmentColors as colors, generateOutfits, rupiah, slotNames, slots, type Item, type Outfit, type Selection, type Slot, type Style, type Weather } from "./engine";
+import { garmentColors as colors, fitsContext, generateOutfits, requiredSlots, rupiah, slotNames, slots, type Item, type Outfit, type Selection, type Slot, type Style, type Weather } from "./engine";
 
-type Draft = { name: string; slot: Slot; color: string; style: "both" | Style; weather: "both" | Weather };
-const emptyDraft: Draft = { name: "", slot: "top", color: colors.putih, style: "both", weather: "both" };
+type Draft = { name: string; slot: Slot | null; color: string; style: "both" | Style; weather: "both" | Weather };
+const emptyDraft: Draft = { name: "", slot: null, color: colors.putih, style: "both", weather: "both" };
 const auth = createAuthClient();
 type SavedWardrobe = { id: string; name: string; items: Item[] };
 
@@ -41,16 +41,22 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
   const [budget, setBudget] = useState("0");
   const [referenceTopColor, setReferenceTopColor] = useState(inspiration?.topColor ?? "");
   const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const itemName = useRef<HTMLInputElement>(null);
+  const itemDetails = useRef<HTMLDetailsElement>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [savedSelection, setSavedSelection] = useState<string | null>(null);
-  const [message, setMessage] = useState(startWithDemo ? "Pilihan demo dibawa dari landing. Kamu bisa mengeditnya di sini." : "Mulai dengan atasan, bawahan, dan sepatu yang kamu punya.");
+  const [message, setMessage] = useState(startWithDemo ? "Pilihan demo dibawa dari landing. Kamu bisa mengeditnya di sini." : "");
   const [error, setError] = useState("");
   const [missing, setMissing] = useState<Slot[]>([]);
   const items = isDemo ? demoItems : wardrobe;
   const visibleItems = isDemo ? demoItems.filter(item => Object.values(selected).includes(item.id)) : wardrobe;
   const preview = outfits[previewIndex]?.items ?? (isDemo ? visibleItems : []);
+  const required = requiredSlots(weather);
+  const readySlots = new Set(wardrobe.filter(item => fitsContext(item, style, weather)).map(item => item.slot));
+  const missingSlot = required.find(slot => !readySlots.has(slot));
+  const draftSlot = draft.slot ?? missingSlot ?? "top";
 
   async function persist(change: Parameters<typeof changeAccountWardrobe>[1]) {
     if (!account || pending) return false;
@@ -112,7 +118,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
   }
   function switchCollection() {
     if (!isDemo) setSelected(preset(style, weather));
-    setIsDemo(!isDemo); setLocked({}); invalidate(); setEditingId(null); setDraft(emptyDraft);
+    setIsDemo(!isDemo); setLocked({}); invalidate(); resetDraft();
     setMessage("Koleksi berganti dan kunci item dilepas.");
   }
   function toggleLock(item: Item) {
@@ -130,11 +136,11 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     if (!name || name.length > 60) { setError("Nama pakaian harus berisi 1–60 karakter."); return; }
     if (!editingId && wardrobe.length >= 40) { setError("Versi awal mendukung maksimal 40 item."); return; }
     const existing = wardrobe.find(item => item.id === editingId);
-    if (existing && locked[existing.slot] === editingId && draft.slot !== existing.slot) {
+    if (existing && locked[existing.slot] === editingId && draftSlot !== existing.slot) {
       setError("Lepaskan kunci item sebelum mengubah kategorinya."); return;
     }
     const item: Item = {
-      id: editingId || crypto.randomUUID(), name, slot: draft.slot, color: draft.color,
+      id: editingId || crypto.randomUUID(), name, slot: draftSlot, color: draft.color,
       styles: draft.style === "both" ? ["casual", "smart-casual"] : [draft.style],
       weather: draft.weather === "both" ? ["tropical", "cool"] : [draft.weather],
       source: "wardrobe", price: null, available: true,
@@ -144,9 +150,28 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     } else {
       setGuestItems(old => editingId ? old.map(existing => existing.id === editingId ? item : existing) : [...old, item]);
     }
-    setDraft(emptyDraft); setEditingId(null); invalidate();
-    setMessage(`${item.name} ${editingId ? "diperbarui" : "ditambahkan"}. Buat ulang kombinasi untuk memakai atribut terbaru.`);
+    resetDraft();
+    invalidate();
+    setMessage(`${item.name} ${editingId ? "diperbarui" : "ditambahkan"}.`);
   }
+  function resetDraft() {
+    setDraft(emptyDraft);
+    setEditingId(null);
+    if (itemDetails.current) itemDetails.current.open = false;
+  }
+
+  function editItem(item: Item) {
+    setDraft({
+      name: item.name, slot: item.slot, color: item.color,
+      style: item.styles.length === 2 ? "both" : item.styles[0],
+      weather: item.weather.length === 2 ? "both" : item.weather[0],
+    });
+    setEditingId(item.id);
+    if (itemDetails.current) itemDetails.current.open = item.styles.length !== 2 || item.weather.length !== 2;
+    setError("");
+    itemName.current?.focus();
+  }
+
   async function removeItem(item: Item) {
     if (pending) return;
     if (locked[item.slot] === item.id) {
@@ -160,7 +185,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     }
     invalidate();
     setMessage(`${item.name} dihapus.`);
-    if (editingId === item.id) { setEditingId(null); setDraft(emptyDraft); }
+    if (editingId === item.id) resetDraft();
   }
   function recommend() {
     invalidate();
@@ -191,15 +216,25 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
     }
   }
 
+  const actions = <>
+    <div className="stylist-actions">
+      <button type="button" className="button primary" onClick={recommend}>Buat kombinasi</button>
+      {outfits.length > 0 && <a className="text-button account-back" href="#result-title">Lihat hasil outfit</a>}
+    </div>
+    {error && <p className="error-message" role="alert">{error}</p>}
+    {!isDemo && missing.length > 0 && <ShoppingLinks missing={missing} style={style} topColor={referenceTopColor} />}
+    <p className="feedback" role="status">{message}</p>
+  </>;
+
   return <>
-    <div className="stylist-intro">
+    <div className="stylist-intro stylist-heading">
       <h1>Hari ini, <em>pakai apa?</em></h1>
       <p>Pilih gaya dan cuaca, lalu susun outfit dari isi lemarimu.</p>
       {inspiration && <p><strong>Ide awal · {inspiration.title}.</strong> {inspiration.stylingNote}</p>}
     </div>
     <div className="stylist-grid">
       <div className="stylist-input">
-        <section className="panel" aria-labelledby="context-title"><h2 id="context-title">Rencana harimu</h2>
+        <section className="panel" aria-labelledby="context-title"><h2 id="context-title">Gaya dan cuaca</h2>
           <div className="form-grid"><label>Gaya<select value={style} onChange={event => updateContext(event.target.value as Style, weather)}><option value="casual">Casual</option><option value="smart-casual">Smart casual</option></select></label>
             <label>Konteks cuaca<select value={weather} onChange={event => updateContext(style, event.target.value as Weather)}><option value="tropical">Tropis</option><option value="cool">Sejuk</option></select></label></div>
           {!isDemo && inspiration && <label>Warna atasan dari inspirasi
@@ -215,7 +250,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
           </details>
         </section>
         <section className="panel" aria-labelledby="wardrobe-title">
-          <div className="panel-title"><h2 id="wardrobe-title">{isDemo ? "Pilihan demo" : account ? "Lemariku" : "Lemari di tab ini"}</h2><span className="pill">{isDemo ? "Demo contoh" : `${wardrobe.length}/40 item`}</span></div>
+          <div className="panel-title"><h2 id="wardrobe-title" tabIndex={-1}>{isDemo ? "Pilihan demo" : account ? "Lemariku" : "Lemari di tab ini"}</h2><span className="pill">{isDemo ? "Demo contoh" : `${wardrobe.length}/40 item`}</span></div>
           <button type="button" className="text-button collection-toggle" onClick={switchCollection}>{isDemo ? "Gunakan lemari sendiri" : "Coba koleksi contoh"}</button>
           {accountUnavailable && <p className="error-message">Akun sementara tidak bisa diakses. Isian baru tetap menjadi draft guest.</p>}
           {!isDemo && (account
@@ -232,36 +267,49 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
                 <p className="privacy-note"><strong>Draft sementara di tab ini.</strong> Lemari dan hasil hilang saat tab dimuat ulang atau ditutup.</p>
                 {accountsEnabled && <Link href="/akun" className="text-button account-back">Masuk untuk menyimpan lemari</Link>}
               </>)}
-          {!visibleItems.length && <div className="empty-state"><strong>Lemari masih kosong.</strong><p>Tambahkan minimal satu atasan, bawahan, dan sepatu. Konteks sejuk juga memerlukan outer.</p></div>}
-          <ul className="wardrobe-list">{visibleItems.map(item => <li key={item.id}>
+          {!isDemo && <div className="wardrobe-readiness">
+            {!wardrobe.length && <p>Lemari masih kosong.</p>}
+            <ul aria-label="Kategori yang sesuai gaya dan cuaca">
+              {required.map(slot => <li key={slot} data-ready={readySlots.has(slot)}>
+                <strong>{slotNames[slot]}</strong>
+                <span>{readySlots.has(slot) ? "Siap" : "Belum siap"}</span>
+              </li>)}
+            </ul>
+          </div>}
+          {(isDemo || !missingSlot) && actions}
+          {!isDemo && <form className="item-form" onSubmit={saveItem} aria-label="Form pakaian">
+            <h3>{editingId ? "Edit pakaian" : "Tambah pakaian"}</h3>
+            <label>Nama pakaian<input ref={itemName} name="name" value={draft.name} maxLength={60} required placeholder="Misalnya, kemeja putih favorit" onChange={event => setDraft({ ...draft, name: event.target.value, slot: draftSlot })} /></label>
+            <div className="form-grid">
+              <label>Kategori<select value={draftSlot} onChange={event => setDraft({ ...draft, slot: event.target.value as Slot })}>{slots.map(slot => <option value={slot} key={slot}>{slotNames[slot]}</option>)}</select></label>
+              <label>Warna<select value={draft.color} onChange={event => setDraft({ ...draft, color: event.target.value, slot: draftSlot })}>{Object.entries(colors).map(([name, color]) => <option value={color} key={color}>{name}</option>)}</select></label>
+            </div>
+            <details ref={itemDetails} className="item-details">
+              <summary>Detail gaya dan cuaca</summary>
+              <div className="form-grid">
+                <label>Gaya yang cocok<select value={draft.style} onChange={event => setDraft({ ...draft, style: event.target.value as Draft["style"], slot: draftSlot })}><option value="both">Keduanya</option><option value="casual">Casual</option><option value="smart-casual">Smart casual</option></select></label>
+                <label>Cuaca yang cocok<select value={draft.weather} onChange={event => setDraft({ ...draft, weather: event.target.value as Draft["weather"], slot: draftSlot })}><option value="both">Keduanya</option><option value="tropical">Tropis</option><option value="cool">Sejuk</option></select></label>
+              </div>
+            </details>
+            <div className="form-actions"><button className="button secondary" type="submit" disabled={pending}>{pending ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan pakaian"}</button>{editingId && <button type="button" className="text-button" disabled={pending} onClick={resetDraft}>Batal edit</button>}</div>
+          </form>}
+          {!isDemo && missingSlot && actions}
+          <ul className="wardrobe-list" aria-label={isDemo ? "Pakaian contoh" : "Pakaian di lemari"}>{visibleItems.map(item => <li key={item.id}>
             <div className="item-description"><span className="color-swatch" style={{ backgroundColor: item.color }} /><span><strong>{item.name}</strong><small>{slotNames[item.slot]} · {isDemo ? "Contoh" : "Milikmu"}</small></span></div>
             <div className="item-actions">
-              {isDemo ? <label className="sr-only-label">Ganti {slotNames[item.slot].toLowerCase()}<select disabled={Boolean(locked[item.slot])} value={selected[item.slot]} onChange={event => { setSelected({ ...selected, [item.slot]: event.target.value }); invalidate(); setMessage(`${slotNames[item.slot]} diganti; bagian lain tetap.`); }}>{demoItems.filter(option => option.slot === item.slot && option.styles.includes(style) && option.weather.includes(weather)).map(option => <option value={option.id} key={option.id}>{option.name}</option>)}</select></label> : <button type="button" className="text-button" disabled={pending} aria-label={`Edit ${item.name}`} onClick={() => {
-                setDraft({ name: item.name, slot: item.slot, color: item.color, style: item.styles.length === 2 ? "both" : item.styles[0], weather: item.weather.length === 2 ? "both" : item.weather[0] }); setEditingId(item.id); setError("");
-              }}>Edit</button>}
+              {isDemo ? <label className="sr-only-label">Ganti {slotNames[item.slot].toLowerCase()}<select disabled={Boolean(locked[item.slot])} value={selected[item.slot]} onChange={event => { setSelected({ ...selected, [item.slot]: event.target.value }); invalidate(); setMessage(`${slotNames[item.slot]} diganti; bagian lain tetap.`); }}>{demoItems.filter(option => option.slot === item.slot && option.styles.includes(style) && option.weather.includes(weather)).map(option => <option value={option.id} key={option.id}>{option.name}</option>)}</select></label> : <button type="button" className="text-button" disabled={pending} aria-label={`Edit ${item.name}`} onClick={() => editItem(item)}>Edit</button>}
               <button type="button" className="lock-button" aria-label={`Pertahankan ${item.name}`} aria-pressed={locked[item.slot] === item.id} onClick={() => toggleLock(item)}>{locked[item.slot] === item.id ? "Terkunci" : "Kunci"}</button>
               {!isDemo && <button type="button" className="text-button" disabled={pending} aria-label={`Hapus ${item.name}`} onClick={() => removeItem(item)}>Hapus</button>}
             </div>
           </li>)}</ul>
-          {!isDemo && <form className="item-form" onSubmit={saveItem} aria-label="Form pakaian">
-            <h3>{editingId ? "Edit pakaian" : "Tambah pakaian"}</h3>
-            <label>Nama pakaian<input name="name" value={draft.name} maxLength={60} required placeholder="Misalnya, kemeja putih favorit" onChange={event => setDraft({ ...draft, name: event.target.value })} /></label>
-            <div className="form-grid"><label>Kategori<select value={draft.slot} onChange={event => setDraft({ ...draft, slot: event.target.value as Slot })}>{slots.map(slot => <option value={slot} key={slot}>{slotNames[slot]}</option>)}</select></label>
-              <label>Warna<select value={draft.color} onChange={event => setDraft({ ...draft, color: event.target.value })}>{Object.entries(colors).map(([name, color]) => <option value={color} key={name}>{name}</option>)}</select></label>
-              <label>Gaya yang cocok<select value={draft.style} onChange={event => setDraft({ ...draft, style: event.target.value as Draft["style"] })}><option value="both">Keduanya</option><option value="casual">Casual</option><option value="smart-casual">Smart casual</option></select></label>
-              <label>Cuaca yang cocok<select value={draft.weather} onChange={event => setDraft({ ...draft, weather: event.target.value as Draft["weather"] })}><option value="both">Keduanya</option><option value="tropical">Tropis</option><option value="cool">Sejuk</option></select></label></div>
-            <div className="form-actions"><button className="button secondary" type="submit" disabled={pending}>{pending ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan pakaian"}</button>{editingId && <button type="button" className="text-button" disabled={pending} onClick={() => { setEditingId(null); setDraft(emptyDraft); }}>Batal edit</button>}</div>
-          </form>}
         </section>
-        <button type="button" className="button primary full" onClick={recommend}>Buat kombinasi</button>
-        {error && <p className="error-message" role="alert">{error}</p>}
-        {!isDemo && missing.length > 0 && <ShoppingLinks missing={missing} style={style} topColor={referenceTopColor} />}
-        <p className="feedback" role="status">{message}</p>
-        {outfits.length > 0 && <a className="text-button jump-to-outfits" href="#result-title">Lihat hasil outfit</a>}
       </div>
       <section className="stylist-output" aria-labelledby="result-title">
         <div className="stylist-stage">
-          <div className="panel-title"><h2 id="result-title" tabIndex={-1}>{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2></div>
+          <div className="panel-title">
+            <h2 id="result-title" tabIndex={-1}>{outfits.length ? "Kombinasi untukmu" : "Ruang padu padan"}</h2>
+            {outfits.length > 0 && <a href="#wardrobe-title" className="text-button account-back">Ubah pilihan</a>}
+          </div>
           {outfits.length > 1 && <div className="preview-options" role="group" aria-label="Pilih kombinasi untuk preview">
             {outfits.map((outfit, index) => <button
               className="lock-button"

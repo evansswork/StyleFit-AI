@@ -41,6 +41,14 @@ export const rupiah = (amount: number) => new Intl.NumberFormat("id-ID", {
   style: "currency", currency: "IDR", maximumFractionDigits: 0,
 }).format(amount);
 
+export function requiredSlots(weather: Weather): readonly Slot[] {
+  return weather === "cool" ? slots : ["top", "bottom", "shoes"];
+}
+
+export function fitsContext(item: Item, style: Style, weather: Weather) {
+  return item.available && item.styles.includes(style) && item.weather.includes(weather);
+}
+
 export function generateOutfits(request: StylingRequest): StylingResult {
   const { items, style, weather, budget, locked = {}, referenceTopColor } = request;
   const fail = (error: string, missing: Slot[] = []): StylingResult => ({ outfits: [], error, missing });
@@ -57,17 +65,16 @@ export function generateOutfits(request: StylingRequest): StylingResult {
     return fail("Data pakaian tidak valid. Gunakan maksimal 40 item dengan identitas unik dan harga rupiah yang valid.");
   }
 
-  const required: Slot[] = weather === "cool" ? [...slots] : ["top", "bottom", "shoes"];
+  const required = requiredSlots(weather);
   for (const [slot, id] of Object.entries(locked)) {
     const item = items.find(candidate => candidate.id === id && candidate.slot === slot);
     if (!item || !item.available) return fail("Item terkunci sudah tidak tersedia. Lepaskan kuncinya atau perbarui pilihan.");
-    if (!required.includes(item.slot) || !item.styles.includes(style) || !item.weather.includes(weather)) {
+    if (!required.includes(item.slot) || !fitsContext(item, style, weather)) {
       return fail(`${item.name} masih terkunci dan tidak sesuai konteks baru. Lepaskan kunci atau pertahankan konteks sebelumnya.`);
     }
   }
 
-  const candidates = required.map(slot => items.filter(item => item.slot === slot && item.available
-    && item.styles.includes(style) && item.weather.includes(weather)
+  const candidates = required.map(slot => items.filter(item => item.slot === slot && fitsContext(item, style, weather)
     && (!locked[slot] || locked[slot] === item.id)));
   const missing = required.filter((_, index) => !candidates[index].length);
   if (missing.length) return fail(`Belum ada ${missing.map(slot => slotNames[slot].toLowerCase()).join(", ")} yang sesuai. Tambahkan item atau ubah konteks.`, missing);

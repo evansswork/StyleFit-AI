@@ -270,6 +270,10 @@ nav a, .site-footer a { min-height: 44px; display: inline-flex; align-items: cen
 }
 .stylist-intro h1 { font-size: clamp(2.65rem, 5vw, 4.8rem); }
 .stylist-intro p { margin-top: 10px; color: var(--muted); }
+.stylist-heading { padding: clamp(20px, 3vw, 32px); }
+.stylist-heading h1 { font-size: clamp(2.45rem, 4.2vw, 3.9rem); }
+.stylist-heading h1 em { line-height: 1.12; }
+.stylist-heading p { max-width: 68ch; }
 .stylist-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
 .stylist-input, .stylist-output { min-width: 0; }
 .panel, .result-card { padding: clamp(16px, 2vw, 26px); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
@@ -298,7 +302,8 @@ select { padding-right: 22px; }
 .budget-details label { margin-top: 6px; }
 .collection-toggle { margin-left: -10px; }
 .wardrobe-list > li { border-top: 1px solid var(--line); padding-block: 8px; }
-.wardrobe-list { margin-top: 6px; }
+.wardrobe-list { margin-top: 12px; }
+.wardrobe-list:empty { display: none; }
 .item-description { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .item-description > span:last-child { display: flex; flex-direction: column; min-width: 0; }
 .item-description strong { overflow-wrap: anywhere; font-size: .9rem; font-weight: 650; }
@@ -307,16 +312,30 @@ select { padding-right: 22px; }
 .item-actions { margin-top: 5px; }
 .sr-only-label { font-size: 0; margin: 0; flex: 1; gap: 0; }
 .sr-only-label select { font-size: 1rem; }
-.item-form { padding-top: 16px; margin-top: 12px; border-top: 1px solid var(--line); }
+.wardrobe-readiness { margin-top: 12px; }
+.wardrobe-readiness p { margin-bottom: 8px; font-size: .85rem; color: var(--muted); }
+.wardrobe-readiness ul { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; }
+.wardrobe-readiness li {
+  display: grid;
+  gap: 2px;
+  padding: 7px 8px;
+  border: 1px dashed var(--control);
+  border-radius: 8px;
+  font-size: .8rem;
+}
+.wardrobe-readiness li[data-ready="true"] { border-style: solid; border-color: var(--line); background: var(--tint); }
+.wardrobe-readiness li span { color: var(--muted); font-size: .75rem; }
+.item-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.item-details summary { min-height: 44px; align-content: center; width: fit-content; font-size: .875rem; color: var(--accent); }
+.item-details[open] > .form-grid { margin-top: 4px; }
+.stylist-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-block: 14px 4px; }
+.stylist-actions > button { flex: 1 1 auto; }
 .item-form h3 { margin-bottom: 12px; }
-.empty-state { border-radius: 8px; margin-top: 6px; padding: 12px; background: var(--paper); font-size: .875rem; }
-.empty-state p { margin-top: 4px; color: var(--muted); }
 .stylist-stage { padding: clamp(14px, 2vw, 22px); border-radius: 14px; background: var(--tint); }
 .stylist-stage h2 { font-size: clamp(1.8rem, 3.25vw, 2.55rem); }
 .empty-preview { padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .empty-preview figcaption { padding: 8px 4px 1px; color: var(--muted); font-size: .8rem; }
 .stage-hint { margin-top: 12px; color: var(--muted); font-size: .875rem; }
-.jump-to-outfits { display: none; }
 .preview-options { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .outfit-results { display: grid; gap: 12px; margin-top: 14px; }
 .result-card[data-preview="true"] { border-color: var(--accent); }
@@ -328,6 +347,13 @@ select { padding-right: 22px; }
 .empty-page { padding-block: 64px; }
 .empty-page h1, .empty-page p { margin-bottom: 16px; }
 
+@media (min-width: 861px) {
+  .wardrobe-list > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wardrobe-list .item-actions { margin: 0; flex: 0 1 auto; justify-content: flex-end; }
+}
+@media (max-width: 760px) {
+  .stylist-grid { grid-template-columns: 1fr; gap: 16px; }
+}
 @media (max-width: 860px) {
   .shell { width: calc(100% - 40px); }
   .demo-studio { gap: 16px; }
@@ -341,12 +367,11 @@ select { padding-right: 22px; }
   .hero-description { margin-top: 12px; }
   .hero-actions { margin-top: 14px; }
   .hero-actions .button { padding-inline: 12px; }
-  .demo-studio, .stylist-grid { grid-template-columns: 1fr; gap: 16px; }
+  .demo-studio { grid-template-columns: 1fr; gap: 16px; }
   .how-section { padding-block: 36px; }
   .how-steps { grid-template-columns: 1fr; gap: 16px; }
   .stylist-page { padding-top: 12px; }
   .stylist-intro { margin-bottom: 14px; }
-  .jump-to-outfits { display: inline-flex; align-items: center; padding-inline: 0; }
 }
 @media (max-width: 380px) {
   nav { gap: 9px; }

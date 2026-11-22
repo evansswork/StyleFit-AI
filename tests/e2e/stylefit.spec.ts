@@ -41,32 +41,53 @@ test("guest can add, correct, lock, and use their own clothes; a reload clears t
   await expect(page.getByText("Sunrise Through the Rain Concept Idea", { exact: true })).toBeVisible();
   await page.screenshot({ path: `test-results/stylist-empty-${test.info().project.name}.png`, fullPage: true });
   await expect(page.getByText("Draft sementara di tab ini.", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Buat kombinasi" }).click();
+  const createOutfit = page.getByRole("button", { name: "Buat kombinasi" });
+  await createOutfit.click();
   await expect(page.getByRole("main").getByRole("alert")).toContainText("Belum ada");
   const form = page.getByRole("form", { name: "Form pakaian" });
-  for (const [name, category] of [["Kaus milikku", "top"], ["Celana milikku", "bottom"], ["Sepatu milikku", "shoes"]]) {
-    await form.getByLabel("Nama pakaian", { exact: true }).fill(name);
-    await form.getByRole("combobox", { name: "Kategori", exact: true }).selectOption(category);
+  expect((await createOutfit.boundingBox())!.y).toBeGreaterThan((await form.boundingBox())!.y);
+  const category = form.getByRole("combobox", { name: "Kategori", exact: true });
+  const readiness = page.getByRole("list", { name: "Kategori yang sesuai gaya dan cuaca" });
+  const nameField = form.getByLabel("Nama pakaian", { exact: true });
+  const detailsToggle = form.getByText("Detail gaya dan cuaca", { exact: true });
+  const itemStyle = form.getByRole("combobox", { name: "Gaya yang cocok", exact: true });
+  await expect(readiness.getByRole("listitem").filter({ hasText: "Belum siap" })).toHaveCount(3);
+  await expect(itemStyle).toBeHidden();
+  for (const [name, suggested] of [["Kaus milikku", "top"], ["Celana milikku", "bottom"], ["Sepatu milikku", "shoes"]]) {
+    await expect(category).toHaveValue(suggested);
+    await nameField.fill(name);
     await form.getByRole("button", { name: "Tambahkan pakaian" }).click();
   }
+  await expect(readiness).not.toContainText("Belum siap");
+  expect((await createOutfit.boundingBox())!.y).toBeLessThan((await form.boundingBox())!.y);
   await page.getByRole("button", { name: "Edit Kaus milikku", exact: true }).click();
-  await form.getByLabel("Nama pakaian", { exact: true }).fill("Kaus favorit");
+  await expect(nameField).toBeFocused();
+  await nameField.fill("Kaus favorit");
+  await detailsToggle.press("Enter");
+  await itemStyle.selectOption("casual");
   await form.getByRole("button", { name: "Simpan perubahan" }).click();
+  const style = page.getByRole("combobox", { name: "Gaya", exact: true });
+  await style.selectOption("smart-casual");
+  await expect(readiness.getByRole("listitem").filter({ hasText: "Atasan" })).toContainText("Belum siap");
+  await style.selectOption("casual");
+  await expect(readiness).not.toContainText("Belum siap");
   await page.getByRole("button", { name: "Pertahankan Kaus favorit", exact: true }).click();
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
   const result = page.getByRole("article", { name: "Kombinasi 1", exact: true });
   await expect(result).toContainText("Kaus favorit");
   await expect(result).toContainText("Tambahan belanja: Rp");
   await expect(result).toContainText("3 item berasal dari lemarimu");
-  if (test.info().project.name.startsWith("mobile")) {
-    await page.getByRole("link", { name: "Lihat hasil outfit" }).click();
-    await expect(page.getByRole("heading", { name: "Kombinasi untukmu" })).toBeFocused();
-  }
+  await page.getByRole("link", { name: "Lihat hasil outfit" }).press("Enter");
+  await expect(page.getByRole("heading", { name: "Kombinasi untukmu" })).toBeFocused();
+  await page.getByRole("link", { name: "Ubah pilihan" }).click();
+  await expect(page.getByRole("heading", { name: "Lemari di tab ini" })).toBeFocused();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: `test-results/stylist-${test.info().project.name}.png`, fullPage: true });
   await page.getByRole("button", { name: "Hapus Kaus favorit", exact: true }).click();
   await expect(page.getByRole("main").getByRole("alert")).toContainText("Lepaskan kunci");
   await page.getByRole("combobox", { name: "Konteks cuaca", exact: true }).selectOption("cool");
+  await expect(readiness.getByRole("listitem").filter({ hasText: "Outer" })).toContainText("Belum siap");
+  await expect(category).toHaveValue("outer");
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
   await expect(page.getByRole("main").getByRole("alert")).toContainText("outer");
   await page.getByRole("link", { name: "StyleFit AI beranda", exact: true }).click();
