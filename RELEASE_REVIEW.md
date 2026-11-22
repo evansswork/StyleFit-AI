@@ -88,3 +88,9 @@ The stylist applies an edited or cleared top-color preference immediately to the
 The wardrobe shows which categories match the current style and weather. An untouched add form suggests the next missing category. Optional garment preferences stay in a disclosure. Once the wardrobe is ready, the primary action moves above the add form. Links move focus between the wardrobe and the result.
 
 Lint, type checking, 27 configuration and unit checks, the production build, 15 guest browser runs, and four account browser runs passed. The guest scenarios verify sequential category defaults, readiness after corrections and weather changes, the primary action order, lock preservation, and keyboard links in both directions. The layout was visually reviewed from Chromium screenshots at 1440, 390, and 360 px. A WebKit check at 390 px also passed for touch entry, category defaults, result navigation, and cool-weather mode. Physical devices and participant usability sessions were outside this pass.
+
+## Interactive 3D avatar, 22 November 2026
+
+The stylist can display the selected look as a WebGL 2 avatar with original procedural meshes. The viewer supports rotation, zoom, relative height and width, switching combinations, and hiding one outer to reveal the top. Clothing templates are labeled similar. Measurements, drape, exact garment models, physical fit, and multiple winter layers remain open.
+
+Lint, type checking, all 27 configuration and unit checks, and the optimized build passed. All 21 guest Chromium browser runs and four account browser runs passed. Tests compare rendered frames after rotation, changing combinations, and hiding the outer, and verify recovery from both startup failure and context loss. Desktop and 360 px screenshots were visually reviewed. A separate 390 px WebKit run used guest wardrobe entries to verify touch, rendered rotation, and switching to 2D. Physical devices and sustained GPU performance have not been tested.

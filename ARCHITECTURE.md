@@ -17,7 +17,7 @@ Baseline versi 1.3 menargetkan biaya layanan/API Rp0 dengan mesin rekomendasi Ty
 | Landmark | MediaPipe | Scan opsional |
 | Segmentasi | GroundingDINO dan SAM | Pemisahan pakaian yang diperlukan |
 | Kemiripan | FashionCLIP dan pgvector | Pencarian visual |
-| 3D | Three.js, React Three Fiber, Drei; aset Blender GLB/glTF | Avatar dan layering |
+| 3D | Three.js + WebGL 2, dimuat saat dipilih; geometri original StyleFit | Avatar dan layering dasar |
 | Photo try-on | Pipeline belum dipilih; nonaktif | T41 memerlukan provider, lisensi, resource, privasi, kualitas, dan biaya yang sesuai |
 | Video | FFmpeg | Pemilihan frame |
 | Cuaca | Input manual dahulu; MET Norway Locationforecast untuk otomatisasi | Tahap perjalanan, dengan cache dan atribusi |
@@ -142,3 +142,9 @@ Drizzle migrations store accounts, wardrobe items, preferences and saved outfits
 The public explorer and stylist resolve published entries on the server. The bundled inspiration works without PostgreSQL. In an account-enabled environment, a row with the same slug overrides the bundled entry, including when unpublished. Catalog writes check the verified session against `STYLEFIT_ADMIN_EMAIL`; a stale form from another session is rejected.
 
 Source URLs and editorial notes are data. The stylist uses the selected style and a small preference for the matching top color. Availability, locks, ownership, and budget rules stay authoritative.
+
+## Browser-rendered avatar
+
+`src/features/avatar` receives the active outfit items and builds original procedural meshes for tops, trousers, shoes, and one outer. The model maps each slot and color from the existing recommendation. Every garment is a labeled similar template. The renderer does not alter wardrobe records, locks, recommendations, or outfit cost. Showing or hiding the outer only changes its visibility in the scene.
+
+The avatar supports 0–360° rotation, 80–130% camera zoom, 90–110% relative height, and 85–115% relative width. Relative controls scale the avatar and garments together. They do not take body measurements or calculate a size or physical fit. The client loads Three.js after selecting 3D and redraws on input and resize. Renderer and mesh resources are disposed when the viewer closes. WebGL failure returns to the existing 2D illustration.

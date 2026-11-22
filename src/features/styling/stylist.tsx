@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createAuthClient } from "better-auth/react";
 import { useRef, useState, type FormEvent } from "react";
-import { OutfitArt } from "@/components/outfit-art";
+import { OutfitPreview } from "../avatar/outfit-preview";
 import { changeDemoContext, demoItems, preset, type DemoState } from "../demo/data";
 import { useGuestWardrobe } from "../wardrobe/guest-wardrobe";
 import { changeAccountWardrobe } from "@/server/wardrobe-actions";
@@ -321,7 +321,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
             >Lihat kombinasi {index + 1}</button>)}
           </div>}
           <div id="outfit-preview" aria-live="polite">
-            {preview.length ? <OutfitArt items={preview} /> : <figure className="empty-preview photo-entrance">
+            {preview.length ? <OutfitPreview items={preview} /> : <figure className="empty-preview photo-entrance">
               <Image src="/demo/sunrise-through-the-rain.png" alt="Dua orang berkemeja putih berbagi earphone" width={640} height={360} unoptimized />
               <figcaption>Sunrise Through the Rain Concept Idea</figcaption>
             </figure>}

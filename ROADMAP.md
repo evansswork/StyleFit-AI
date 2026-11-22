@@ -36,8 +36,8 @@ Selesai tahap: sumber dan biaya dapat diperiksa, referensi tidak dikenal tertang
 
 ## Tahap 3 Avatar dan layering
 
-- [ ] T30 Siapkan avatar manual dan aset pakaian berizin; dokumentasikan kategori serta rentang parameter yang didukung.
-- [ ] T31 Implementasikan rotasi/zoom, pergantian pakaian, layering, perbandingan, serta label spesifik/serupa.
+- [x] T30 Siapkan avatar manual dan aset pakaian berizin. Prototipe memakai geometri original untuk atasan, bawahan, sepatu, dan outer. Rentang proporsi tercatat di ARCHITECTURE.md.
+- [ ] T31 Lengkapi rotasi/zoom, pergantian pakaian, layering, perbandingan, serta label spesifik/serupa. Prototipe sudah mendukung rotasi 360°, zoom, perbandingan antar kombinasi, dan satu outer yang bisa disembunyikan. Model pakaian spesifik dan layering winter bertingkat masih terbuka.
 - [ ] T32 Tambahkan panduan ukuran hanya untuk produk dan parameter yang datanya cukup; pertahankan fallback 2D.
 
 Selesai tahap: U10 dan U12 serta kriteria terkait lulus pada aset yang diumumkan; kegagalan muat dan batas tubuh/pakaian tercatat.

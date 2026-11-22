@@ -32,7 +32,7 @@ Build server Next.js standar tidak memerlukan Vercel. `npm run start` memakai bu
 4. Pilih **Gunakan lemari sendiri**, lalu masukkan atasan, bawahan, dan sepatu. Untuk sejuk tambahkan outer.
 5. Edit atribut atau kunci item, lalu buat ulang kombinasi. Hasil hanya memakai barang yang kamu masukkan; tidak mengarang kepemilikan atau produk belanja.
 
-Preview adalah ilustrasi kategori dan warna 2D. Bukan model pakaian spesifik, simulasi ukuran, atau photo try-on. Konteks tropis/sejuk adalah input manual; bukan cuaca live atau panduan winter.
+Preview awal memakai ilustrasi 2D. Pilih **Avatar 3D** pada outfit hasil atau koleksi contoh untuk memutar model serupa, mengatur zoom dan proporsi, serta melihat lapisan dalam saat ada outer. Mode 3D memerlukan WebGL 2. Model memakai kategori dan warna sebagai acuan visual. Konteks tropis/sejuk adalah input manual; bukan cuaca live atau panduan winter.
 
 Search by title on `/inspirasi`. Opening a result passes its style and optional top color to the stylist, where it uses the same wardrobe. Change or clear the suggested top color in the stylist to refine the next combination and search links. The source links identify each drama title. The styling notes are editorial adaptations. When a required category has no suitable garment, the optional marketplace searches use the selected style and reference color. The links provide no live prices or stock.
 

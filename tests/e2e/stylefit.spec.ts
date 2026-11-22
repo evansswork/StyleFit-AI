@@ -196,3 +196,72 @@ test("shopping links use missing outfit categories without making price or owner
   await expect(page.getByRole("link", { name: /Cari kemeja/ })).toHaveCount(0);
   expect(externalRequests).toEqual([]);
 });
+
+test("3D renders the chosen outfit and supports rotation, zoom, proportions, and layering", async ({ page }) => {
+  const externalRequests: string[] = [];
+  page.on("request", request => {
+    if (!["127.0.0.1", "localhost"].includes(new URL(request.url()).hostname)) externalRequests.push(request.url());
+  });
+  await page.goto("/stylist?demo=1&style=smart-casual&weather=cool");
+  await page.getByRole("button", { name: "Buat kombinasi" }).click();
+  const firstOutfit = page.getByRole("article", { name: "Kombinasi 1", exact: true });
+  await expect(firstOutfit).toContainText("Cardigan abu");
+  await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
+  const avatar = page.getByRole("img", { name: /Avatar 3D dengan/ });
+  const rotation = page.getByRole("slider", { name: "Rotasi avatar", exact: true });
+  await expect(rotation).toHaveValue("22");
+  await expect(page.getByText(/Model pakaian serupa/)).toBeVisible();
+  const before = await avatar.screenshot();
+  await rotation.press("End");
+  await expect(rotation).toHaveValue("360");
+  expect((await avatar.screenshot()).equals(before)).toBe(false);
+
+  const outer = page.getByRole("checkbox", { name: "Tampilkan outer" });
+  const layered = await avatar.screenshot();
+  await outer.uncheck();
+  expect((await avatar.screenshot()).equals(layered)).toBe(false);
+  await expect(firstOutfit).toContainText("Cardigan abu");
+
+  const differentLook = await avatar.screenshot();
+  await page.getByRole("button", { name: "Lihat kombinasi 2" }).click();
+  const secondOutfit = page.getByRole("article", { name: "Kombinasi 2", exact: true });
+  const names = await secondOutfit.getByRole("listitem").allTextContents();
+  for (const name of names) await expect(avatar).toHaveAccessibleName(new RegExp(name.trim()));
+  expect((await avatar.screenshot()).equals(differentLook)).toBe(false);
+
+  const zoom = page.getByRole("slider", { name: "Zoom", exact: true });
+  await zoom.press("ArrowRight");
+  await expect(zoom).toHaveValue("101");
+  const height = page.getByRole("slider", { name: "Tinggi relatif", exact: true });
+  const width = page.getByRole("slider", { name: "Lebar relatif", exact: true });
+  await height.press("End");
+  await width.press("Home");
+  await expect(height).toHaveValue("110");
+  await expect(width).toHaveValue("85");
+  await page.getByRole("button", { name: "Reset tampilan 3D" }).click();
+  await expect(height).toHaveValue("100");
+  await expect(width).toHaveValue("100");
+  await expect(outer).toBeChecked();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await avatar.screenshot({ path: `test-results/avatar-${test.info().project.name}.png` });
+  expect(externalRequests).toEqual([]);
+
+  await avatar.evaluate(element => element.dispatchEvent(new Event("webglcontextlost")));
+  await expect(page.getByRole("button", { name: "Ilustrasi 2D", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(secondOutfit).toBeVisible();
+});
+
+test("no WebGL keeps the outfit and its 2D preview available", async ({ page }) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, kind: string, options?: unknown) {
+      return kind === "webgl2" ? null : Reflect.apply(getContext, this, [kind, options]);
+    } as typeof getContext;
+  });
+  await page.goto("/stylist?demo=1");
+  await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
+  await expect(page.getByText(/Preview 3D tidak dapat dimuat/)).toBeVisible();
+  await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih" })).toBeVisible();
+  await page.getByRole("button", { name: "Buat kombinasi" }).click();
+  await expect(page.getByRole("article", { name: "Kombinasi 1", exact: true })).toBeVisible();
+});
