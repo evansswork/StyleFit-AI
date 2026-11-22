@@ -90,3 +90,5 @@ Pada stylist, mode **Avatar 3D** tersedia ketika ada kombinasi atau pilihan demo
 Di ruang coba demo, **Bandingkan scan sepatu** memperlihatkan tiga tampak sumber. Pemilihan tampak mengarahkan kamera 3D ke detail sepatu. Tombol perbandingan menukar model serupa dengan scan yang bersumber dari satu SKU dan mengikuti kunci sepatu. Jika scan gagal, template tetap tersedia dengan tombol untuk mencoba lagi.
 
 Panel **Panduan ukuran sepatu** tampil di bawah preview demo dan bekerja di mode 2D. Pengguna memilih SKU dan mengisi panjang kaki yang lebih panjang dalam sentimeter. Tampilkan acuan EU dan UK beserta sumber. Jika ukuran berada di antara dua baris, tampilkan kedua opsi. Perubahan input atau SKU menghapus hasil sebelumnya.
+
+**Layering musim dingin** menampilkan tiga pilihan kumulatif di atas avatar. **Dasar** melihat kemeja, **Tengah** menambahkan rompi, dan **Luar** menambahkan jaket. Detail lapisan mendekatkan kamera ke badan atas tanpa menggeser sudut rotasi. Jika WebGL gagal, tampilkan daftar tiga lapisan dan pertahankan ilustrasi outfit sebelumnya.

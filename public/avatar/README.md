@@ -25,3 +25,7 @@ Source files came from the [Three.js example asset](https://github.com/mrdoob/th
 Adidas Adistar Boost M (SKU F32290, GTIN 887383314715), Google Scanned Objects, © 2020 Google LLC. [Original scan, thumbnails and metadata](https://fuel.gazebosim.org/1.0/GoogleResearch/models/adistar_boost_m) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Source archive version 1.
 
 StyleFit converted the original OBJ into a Y-up GLB and reduced the color texture to 2048 px. Mesh coordinates retain their source scale. The exterior bounding box is approximately 304.7 × 112.6 × 123.3 mm in length, width and height. Source thumbnails were cropped and converted to WebP. On the avatar, a reflected copy stands in for the opposite shoe. The exterior dimensions describe the scanned object.
+
+## Winter layering example
+
+The vest was adapted from Avery’s shirt torso, fitted to the pose and textured using Sam’s crewneck fabric maps. The winter GLB includes variants of the collar and the vest interior for the open jacket. The base uses Avery’s existing shirt. The outer uses Daniel’s field jacket. These garments are studio examples with fixed drape in the standing pose.

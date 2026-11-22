@@ -281,6 +281,9 @@ test("no WebGL keeps the outfit and its 2D preview available", async ({ page }) 
   await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
   await expect(page.getByText(/Preview 3D tidak dapat dimuat/)).toBeVisible();
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih" })).toBeVisible();
+  await page.getByRole("button", { name: "Layering musim dingin", exact: true }).click();
+  await expect(page.getByRole("list", { name: "Contoh lapisan musim dingin" })).toContainText("Rompi rajut");
+  await expect(page.getByRole("button", { name: "Ilustrasi 2D", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Buat kombinasi" }).click();
   await expect(page.getByRole("article", { name: "Kombinasi 1", exact: true })).toBeVisible();
 });
@@ -398,4 +401,62 @@ test("footwear sizing works in 2D and withholds a result for a scan without a ch
   await guide.getByText("Panduan ukuran sepatu", { exact: true }).click();
   await expect(input).toHaveValue("");
   expect(assetRequests).toEqual([]);
+});
+
+test("winter studio peels back three layers and returns to the original outfit", async ({ page }) => {
+  await page.goto("/stylist?demo=1&style=smart-casual&weather=cool");
+  await page.getByRole("button", { name: "Buat kombinasi" }).click();
+  const outfit = page.getByRole("article", { name: "Kombinasi 1", exact: true });
+  await expect(outfit).toContainText("Cardigan abu");
+  await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
+  const avatar = page.getByRole("img", { name: /Avatar 3D dengan/ });
+  const rotation = page.getByRole("slider", { name: "Rotasi avatar", exact: true });
+  await rotation.press("PageUp");
+  const angle = await rotation.inputValue();
+
+  await page.getByRole("button", { name: "Layering musim dingin", exact: true }).press("Enter");
+  const layers = page.getByRole("group", { name: "Lapisan musim dingin" });
+  await expect(layers.getByRole("button", { name: "Luar", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Detail lapisan", exact: true }).click();
+  await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja lengan panjang, Rompi rajut, Jaket");
+  const outer = await avatar.screenshot();
+
+  await layers.getByRole("button", { name: "Tengah", exact: true }).press("Enter");
+  await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja lengan panjang, Rompi rajut");
+  const middle = await avatar.screenshot();
+
+  await layers.getByRole("button", { name: "Dasar", exact: true }).click();
+  await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja lengan panjang");
+  const base = await avatar.screenshot();
+  const changedArea = await page.evaluate(async (frames) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 60;
+    const ctx = canvas.getContext("2d")!;
+    const pixels: Uint8ClampedArray[] = [];
+    for (const frame of frames) {
+      const image = new Image();
+      image.src = "data:image/png;base64," + frame;
+      await image.decode();
+      ctx.drawImage(image, 0, 0, 60, 60);
+      pixels.push(ctx.getImageData(0, 0, 60, 60).data);
+    }
+    return pixels.slice(1).map((current, frame) => {
+      const previous = pixels[frame];
+      let changed = 0;
+      for (let i = 0; i < current.length; i += 4) {
+        const delta = Math.abs(current[i] - previous[i]) + Math.abs(current[i + 1] - previous[i + 1])
+          + Math.abs(current[i + 2] - previous[i + 2]);
+        if (delta > 66) changed++;
+      }
+      return changed / (60 * 60);
+    });
+  }, [base, middle, outer].map(buffer => buffer.toString("base64")));
+  // A visible layer should change the torso, not just a few pixels near a seam.
+  for (const difference of changedArea) expect(difference).toBeGreaterThan(0.08);
+  await expect(rotation).toHaveValue(angle);
+
+  await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
+  await expect(avatar).toHaveAccessibleName(/Cardigan abu/);
+  await expect(rotation).toHaveValue(angle);
+  await expect(outfit).toContainText("Cardigan abu");
 });

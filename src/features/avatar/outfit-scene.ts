@@ -7,6 +7,7 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import type { Item } from "../styling/engine";
 import { dressModel, disposeModel } from "./outfit-model";
 import { scannedShoe } from "./scanned-shoe";
+import type { WinterLayer } from "./winter-layers";
 
 export type AvatarView = {
   rotation: number;
@@ -14,7 +15,16 @@ export type AvatarView = {
   height: number;
   width: number;
   showOuter: boolean;
-  framing: "outfit" | "face" | "trousers" | "shoes";
+  framing: "outfit" | "face" | "trousers" | "shoes" | "layers";
+  winter?: WinterLayer;
+};
+
+const frames = {
+  outfit: [0.90, 0.98, 0.41],
+  face: [1.62, 0.211, 0.16],
+  trousers: [0.58, 0.61, 0.30],
+  shoes: [0.135, 0.235, 0.24],
+  layers: [1.24, 0.38, 0.34],
 };
 
 export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () => void, signal: AbortSignal) {
@@ -93,12 +103,10 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
     subject.rotation.y = view.rotation * Math.PI / 180;
     subject.scale.set(view.width / 100, view.height / 100, view.width / 100);
     const face = view.framing === "face";
-    const trousers = view.framing === "trousers";
     const shoes = view.framing === "shoes";
-    const targetY = (face ? 1.62 : trousers ? 0.58 : shoes ? 0.135 : 0.90) * subject.scale.y;
-    const halfHeight = face ? Math.max(0.211, 0.16 / aspect)
-      : trousers ? Math.max(0.61, 0.30 / aspect)
-      : shoes ? Math.max(0.235, 0.24 / aspect) : Math.max(0.98, 0.41 / aspect);
+    const [center, height, width] = frames[view.framing];
+    const targetY = center * subject.scale.y;
+    const halfHeight = Math.max(height, width / aspect);
     camera.left = -halfHeight * aspect;
     camera.right = halfHeight * aspect;
     camera.top = halfHeight;
@@ -115,15 +123,21 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
   canvas.addEventListener("webglcontextlost", fail);
   resize();
 
+  function updateOutfit() {
+    if (shoePair) shoePair.visible = showScannedShoes && !view?.winter;
+    dressModel(subject, items, view?.showOuter ?? true, Boolean(shoePair?.visible), view?.winter);
+  }
+
   return {
     setOutfit(nextItems: Item[]) {
       items = nextItems;
-      dressModel(subject, items, view?.showOuter ?? true, Boolean(shoePair?.visible));
+      updateOutfit();
       applyView();
     },
     setView(next: AvatarView) {
-      if (view?.showOuter !== next.showOuter) dressModel(subject, items, next.showOuter, Boolean(shoePair?.visible));
+      const changedLayers = view?.showOuter !== next.showOuter || view?.winter !== next.winter;
       view = next;
+      if (changedLayers) updateOutfit();
       applyView();
     },
     async setScannedShoes(visible: boolean) {
@@ -153,8 +167,7 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
         }
       }
       if (signal.aborted) return;
-      if (shoePair) shoePair.visible = showScannedShoes;
-      dressModel(subject, items, view?.showOuter ?? true, Boolean(shoePair?.visible));
+      updateOutfit();
       applyView();
     },
     dispose() {

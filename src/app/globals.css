@@ -477,3 +477,7 @@ select { padding-right: 22px; }
 .size-match ul { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 6px; list-style: none; }
 .size-match li { padding: 4px 8px; border-radius: 5px; background: var(--tint); }
 .size-match li span { margin-inline-start: 6px; font-size: .82rem; }
+
+.winter-stage { margin-block: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.winter-stage .preview-options { margin: 0; }
+.winter-fallback { margin: 8px 0; padding-inline-start: 1.3rem; font-size: .85rem; }

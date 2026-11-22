@@ -37,7 +37,7 @@ Selesai tahap: sumber dan biaya dapat diperiksa, referensi tidak dikenal tertang
 ## Tahap 3 Avatar dan layering
 
 - [x] T30 Siapkan avatar manual dan aset pakaian berizin. Studio memakai aset CC0 bertekstur untuk wajah, dua atasan, dua bawahan, dua pasang sepatu, dan satu outer. Rentang proporsi tercatat di ARCHITECTURE.md.
-- [ ] T31 Lengkapi rotasi/zoom, pergantian pakaian, layering, perbandingan, serta label spesifik/serupa. Prototipe sudah mendukung rotasi 360°, zoom, perbandingan antar kombinasi, pergantian satu item demo, serta satu outer yang bisa disembunyikan. Satu scan produk sepatu (SKU F32290) tersedia di demo dengan tiga tampak sumber. Model pakaian spesifik dan layering winter bertingkat masih terbuka.
+- [ ] T31 Lengkapi rotasi/zoom, pergantian pakaian, layering, perbandingan, serta label spesifik/serupa. Prototipe sudah mendukung rotasi 360°, zoom, perbandingan antar kombinasi, pergantian satu item demo, serta satu outer yang bisa disembunyikan. Satu scan produk sepatu (SKU F32290) tersedia di demo dengan tiga tampak sumber. Demo musim dingin menampilkan urutan kemeja, rompi rajut, dan jaket. Model pakaian spesifik dan validasi perlengkapan untuk cuaca nyata masih terbuka.
 - [x] T32 Tambahkan panduan ukuran hanya untuk produk dan parameter yang datanya cukup; pertahankan fallback 2D. Pilot Ultraboost 5 ID8812 menampilkan acuan EU/UK dari panjang kaki.
 
 Selesai tahap: U10 dan U12 serta kriteria terkait lulus pada aset yang diumumkan; kegagalan muat dan batas tubuh/pakaian tercatat.

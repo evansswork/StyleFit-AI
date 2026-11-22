@@ -6,6 +6,7 @@ import { OutfitArt } from "@/components/outfit-art";
 import type { Item } from "../styling/engine";
 import type { AvatarView, mountOutfitScene } from "./outfit-scene";
 import { scannedShoe } from "./scanned-shoe";
+import { winterLayers, type WinterLayer } from "./winter-layers";
 
 const initialView: AvatarView = { rotation: 22, zoom: 100, height: 100, width: 100, showOuter: true, framing: "outfit" };
 const ranges = [
@@ -17,14 +18,16 @@ const ranges = [
 
 type PreviewMode = "2d" | "3d" | "fallback";
 
-function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
-  items: Item[]; onModeChange: (mode: PreviewMode) => void; children?: ReactNode; demo: boolean; shoesLocked: boolean;
+function AvatarPreview({ items, onModeChange, children, demo, shoesLocked, winter }: {
+  items: Item[]; onModeChange: (mode: PreviewMode) => void; children?: ReactNode;
+  demo: boolean; shoesLocked: boolean; winter: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [viewer, setViewer] = useState<Awaited<ReturnType<typeof mountOutfitScene>> | null>(null);
   const [view, setView] = useState(initialView);
+  const [winterLayer, setWinterLayer] = useState<WinterLayer>("outer");
   const [scan, setScan] = useState<"idle" | "loading" | "ready" | "error">("idle");
-  const compareShoes = demo && !shoesLocked && (scan === "loading" || scan === "ready");
+  const compareShoes = demo && !winter && !shoesLocked && (scan === "loading" || scan === "ready");
   const scanVisible = compareShoes && scan === "ready";
   const drag = useRef<{ id: number; x: number; rotation: number } | null>(null);
   const hasOuter = items.some(item => item.slot === "outer");
@@ -54,7 +57,12 @@ function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
   }, [onModeChange]);
 
   useEffect(() => { viewer?.setOutfit(items); }, [viewer, items]);
-  useEffect(() => { viewer?.setView(view); }, [viewer, view]);
+  useEffect(() => {
+    const framing = winter
+      ? (view.framing === "layers" || view.framing === "outfit" ? view.framing : "layers")
+      : (view.framing === "layers" ? "outfit" : view.framing);
+    viewer?.setView({ ...view, framing, winter: winter ? winterLayer : undefined });
+  }, [viewer, view, winter, winterLayer]);
   useEffect(() => {
     if (!viewer) return;
     let current = true;
@@ -73,20 +81,34 @@ function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
     setView(current => ({ ...current, framing: "shoes", zoom: 100 }));
   }
 
+  const visibleLayers = winterLayers.slice(0, winterLayers.findIndex(layer => layer.id === winterLayer) + 1);
+
   return <div className="avatar-preview">
+    {viewer && winter && <div className="winter-stage">
+      <div className="preview-options" role="group" aria-label="Lapisan musim dingin">
+        {winterLayers.map(layer => <button key={layer.id} type="button" className="lock-button"
+          aria-pressed={winterLayer === layer.id}
+          onClick={() => { setWinterLayer(layer.id); setView(current => ({ ...current, framing: "layers" })); }}>{layer.label}</button>)}
+      </div>
+      <p className="fine-print" role="status">{visibleLayers.map(layer => layer.garment).join(" + ")}</p>
+    </div>}
     {viewer && <div className="preview-options" role="group" aria-label="Bingkai avatar">
       <button type="button" className="lock-button" aria-pressed={view.framing === "outfit"}
         onClick={() => setView({ ...view, framing: "outfit" })}>Outfit lengkap</button>
+      {winter ? <button type="button" className="lock-button"
+        aria-pressed={view.framing !== "outfit"}
+        onClick={() => setView({ ...view, framing: "layers" })}>Detail lapisan</button> : <>
       <button type="button" className="lock-button" aria-pressed={view.framing === "face"}
         onClick={() => setView({ ...view, framing: "face" })}>Detail wajah</button>
       <button type="button" className="lock-button" aria-pressed={view.framing === "trousers"}
         onClick={() => setView({ ...view, framing: "trousers" })}>Detail celana</button>
       {demo && <button type="button" className="lock-button" aria-pressed={view.framing === "shoes"}
         onClick={() => setView({ ...view, framing: "shoes" })}>Detail sepatu</button>}
+      </>}
     </div>}
     <figure>
-      <canvas ref={canvas} role="img" aria-label={`Avatar 3D dengan ${items.map(item =>
-        scanVisible && item.slot === "shoes" ? scannedShoe.name : item.name).join(", ")}`}
+      <canvas ref={canvas} role="img" aria-label={winter ? `Avatar 3D dengan ${visibleLayers.map(layer => layer.garment).join(", ")}`
+        : `Avatar 3D dengan ${items.map(item => scanVisible && item.slot === "shoes" ? scannedShoe.name : item.name).join(", ")}`}
         onPointerDown={event => {
           if (!viewer || !event.isPrimary || event.button !== 0) return;
           drag.current = { id: event.pointerId, x: event.clientX, rotation: view.rotation };
@@ -100,11 +122,11 @@ function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
         }}
         onLostPointerCapture={() => { drag.current = null; }} />
       {!viewer && <p className="fine-print" role="status">Memuat avatar 3D…</p>}
-      <figcaption>{scanVisible
+      <figcaption>{winter ? "Contoh tiga lapisan atasan. Pilih perlengkapan sesuai suhu, aktivitas, dan cuaca tujuan." : scanVisible
         ? `Sepatu memakai scan produk ${scannedShoe.sku}. Pakaian memakai model serupa.`
         : "Model pakaian serupa. Warna mengikuti pilihanmu. Potongan dan bahan memakai template studio."}</figcaption>
     </figure>
-    {viewer && demo && <details className="studio-picker scan-comparison">
+    {viewer && demo && !winter && <details className="studio-picker scan-comparison">
       <summary>Bandingkan scan sepatu</summary>
       <h3>{scannedShoe.name}</h3>
       <p className="fine-print">SKU {scannedShoe.sku} · Dimensi luar sampel {scannedShoe.exterior.length} × {scannedShoe.exterior.width} × {scannedShoe.exterior.height} mm (panjang × lebar × tinggi).</p>
@@ -122,7 +144,7 @@ function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
       </div>
       <p className="fine-print">Google Scanned Objects, © 2020 Google LLC. Tampak sumber dipotong untuk perbandingan. Satu sepatu dicerminkan untuk menampilkan pasangan. <a href={scannedShoe.source}>Sumber scan</a> · <a href={scannedShoe.license}>CC BY 4.0</a></p>
     </details>}
-    {viewer && children}
+    {viewer && !winter && children}
     {viewer && <div className="avatar-controls">
       <div className="avatar-ranges">
         {ranges.map(({ key, label, min, max, unit }) => <label key={key}>
@@ -132,7 +154,7 @@ function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
             onChange={event => setView({ ...view, [key]: Number(event.target.value) })} />
         </label>)}
       </div>
-      {hasOuter && <label className="checkbox-label"><input type="checkbox" checked={view.showOuter}
+      {hasOuter && !winter && <label className="checkbox-label"><input type="checkbox" checked={view.showOuter}
         onChange={event => setView({ ...view, showOuter: event.target.checked })} /> Tampilkan outer</label>}
       <button type="button" className="text-button avatar-reset" onClick={() => setView(initialView)}>Reset tampilan 3D</button>
     </div>}
@@ -143,16 +165,30 @@ export function OutfitPreview({ items, startIn3D, demo, shoesLocked, children }:
   items: Item[]; startIn3D: boolean; demo: boolean; shoesLocked: boolean; children?: ReactNode;
 }) {
   const [mode, setMode] = useState<PreviewMode>(startIn3D ? "3d" : "2d");
+  const [winter, setWinter] = useState(false);
+  const showWinter = demo && winter;
+  function openPreview(next: "2d" | "3d", layers: boolean) {
+    setWinter(layers);
+    setMode(next);
+  }
   return <>
     <div className="preview-options" role="group" aria-label="Mode preview">
-      <button type="button" className="lock-button" aria-pressed={mode !== "3d"} onClick={() => setMode("2d")}>Ilustrasi 2D</button>
-      <button type="button" className="lock-button" aria-pressed={mode === "3d"} onClick={() => setMode("3d")}>Avatar 3D</button>
+      <button type="button" className="lock-button" aria-pressed={mode !== "3d"} onClick={() => openPreview("2d", false)}>Ilustrasi 2D</button>
+      <button type="button" className="lock-button" aria-pressed={mode === "3d" && !showWinter} onClick={() => openPreview("3d", false)}>Avatar 3D</button>
+      {demo && <button type="button" className="lock-button" aria-pressed={mode === "3d" && showWinter}
+        onClick={() => openPreview("3d", true)}>Layering musim dingin</button>}
     </div>
     {mode === "fallback" && <p className="privacy-note" role="status">
       Preview 3D tidak dapat dimuat. Kamu masih bisa melihat ilustrasi 2D atau mencoba 3D lagi.
     </p>}
     {mode === "2d" ? <OutfitArt items={items} /> : <div className="avatar-workspace">
-      {mode === "3d" ? <AvatarPreview key={String(demo)} items={items} onModeChange={setMode} demo={demo} shoesLocked={shoesLocked}>{children}</AvatarPreview> : <OutfitArt items={items} />}
+      {mode === "3d" ? <AvatarPreview key={String(demo)} items={items} onModeChange={setMode}
+        demo={demo} shoesLocked={shoesLocked} winter={showWinter}>{children}</AvatarPreview> : <>
+        <OutfitArt items={items} />
+        {showWinter && <ol className="winter-fallback" aria-label="Contoh lapisan musim dingin">
+          {winterLayers.map(layer => <li key={layer.id}><strong>{layer.label}</strong> · {layer.garment}</li>)}
+        </ol>}
+      </>}
       <aside className="avatar-reference" aria-label="Referensi foto dan sumber avatar">
         <figure>
           <Image src="/demo/sunrise-through-the-rain.png" alt="Dua orang berkemeja putih berbagi earphone"

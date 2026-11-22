@@ -156,3 +156,5 @@ The demo can load one product scan identified by source and SKU. It lives in a s
 ## Footwear sizing
 
 The demo size guide uses a local manufacturer chart and a curated selection keyed by SKU. Only Ultraboost 5 ID8812 has a linked chart. Adistar Boost M F32290 exposes its scan source without a size result. The calculator compares the longer foot’s manually entered length in integer millimetres against the chart. Exact matches show one row and measurements between rows show both. Results and measurements stay in ephemeral component state. The guide runs independently of WebGL, account services, and avatar measurements.
+
+The winter example selects one of three cumulative top layers within the existing avatar. A fitted vest, a narrowed vest panel inside the jacket and separate shirt coverage prevent overlapping surfaces in the supported pose. Winter materials and visibility are local to the viewer. Layer changes do not update item IDs, prices, wardrobe or recommendations. Lack of WebGL preserves the base 2D outfit and the text breakdown.

@@ -118,3 +118,9 @@ The source and optimized model both contain 32,918 triangles. The source exterio
 U12/P07 covers one footwear guide in the stylist demo. Adidas lists Ultraboost 5 ID8812 as true to size. The 28 length/EU/UK entries were compared against the manufacturer's general footwear table. The UI accepts Indonesian decimal commas, shows adjacent sizes for lengths between table rows, and validates out-of-range values. The F32290 comparison exposes its scan source and has no size calculation. Changing inputs clears results. Reloading clears the entered length.
 
 Manual browser checks on macOS used sample values at 1440 px, 360 px and 390 px. Keyboard input, the comparison result and the no-chart view were verified. Actual fit on feet and owner acceptance are pending.
+
+## Winter layering preview, November 22, 2026
+
+U10 now covers a cumulative shirt, knit vest, and jacket example. Desktop Chromium and 390 px WebKit renders were reviewed at front, side and rear angles. The browser suite checks the torso’s rendered change between each stage, keyboard operation, rotation retained when returning to the original outfit, and the layer list when WebGL fails.
+
+Local build, lint, typecheck, 39 budget and unit checks, 36 guest browser checks and 4 account checks passed. The winter clothes use a fixed standing pose and template materials. Warmth ratings, trip-specific apparel, physical fitting and owner acceptance remain pending.
