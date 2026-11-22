@@ -50,6 +50,7 @@ Perhitungan warna hanya memeriksa pasangan token yang ditetapkan, bukan keseluru
 | Unggahan tersimpan | Volume privat lokal, batas file, akses, retensi, backup, dan penghapusan | Lokasi target ditetapkan; endpoint media serta backup belum diimplementasikan |
 | T21 analisis gambar mendatang | Provider cloud gratis yang sesuai kuota/privasi, evaluasi kualitas, otorisasi job, koreksi, dan retry | Belum dipilih; bukan dependensi rekomendasi inti |
 | Avatar dan rambut | Aset berizin, pemetaan, rentang parameter yang didukung | Studio lokal dengan satu avatar dan tujuh template pakaian/sepatu telah tersedia. Satu scan produk sepatu tersedia untuk demo. Rambut yang bisa diganti dan data ukuran untuk fitting belum tersedia. |
+| Panduan ukuran sepatu | Tabel produsen, kaitan SKU, dan satuan pengukuran yang diperiksa | Pilot ID8812 di demo. F32290 hanya memiliki data dimensi luar. |
 | Scan opsional | Metode, kebutuhan model, lisensi, dan privasi dievaluasi sebelum integrasi | Belum dipilih atau diinstal; model lokal bukan default |
 | Photo try-on | Provider/pipeline, seluruh lisensi, privasi, biaya, resource dan kualitas | Belum siap; kandidat FASHN VTON 1.5 memiliki dependensi parser yang membatasi penggunaan komersial |
 | Video | FFmpeg, batas file, ekstraksi frame | CLI FFmpeg 9.0.2 tersedia; pipeline belum dibuat |

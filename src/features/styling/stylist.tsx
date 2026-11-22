@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createAuthClient } from "better-auth/react";
 import { useRef, useState, type FormEvent } from "react";
 import { OutfitPreview } from "../avatar/outfit-preview";
+import { FootwearSizeGuide } from "../sizing/footwear-size-guide";
 import { changeDemoContext, demoItems, preset, type DemoState } from "../demo/data";
 import { useGuestWardrobe } from "../wardrobe/guest-wardrobe";
 import { changeAccountWardrobe } from "@/server/wardrobe-actions";
@@ -345,6 +346,7 @@ export function Stylist({ initialDemo, startWithDemo, openStudio, accountsEnable
               <figcaption>Sunrise Through the Rain Concept Idea</figcaption>
             </figure>}
           </div>
+          {isDemo && <FootwearSizeGuide />}
           {!preview.length && <p className="stage-hint">Tambahkan pakaian, lalu buat kombinasi untuk melihat preview di sini.</p>}
           {isDemo && !outfits.length && <p className="stage-hint">Buat kombinasi untuk melihat alternatif dengan item terkunci.</p>}
         </div>

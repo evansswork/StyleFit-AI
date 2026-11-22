@@ -152,3 +152,7 @@ The avatar supports 0–360° rotation, 80–130% camera zoom, 90–110% relativ
 The viewer decodes the local meshopt-compressed GLB on demand. Full-body, portrait and trouser framing use the same scene. The drama photo is a separate editorial reference. No user photo is used to construct the model.
 
 The demo can load one product scan identified by source and SKU. It lives in a separate compressed GLB and loads only when requested. The avatar keeps the generic footwear visible until the asset is ready. The optional scan changes the rendering for the footwear slot while keeping the selected item IDs and recommendations intact. The source package supplies one shoe. The preview mirrors it for the opposite foot and reports exterior bounds measured from the original mesh.
+
+## Footwear sizing
+
+The demo size guide uses a local manufacturer chart and a curated selection keyed by SKU. Only Ultraboost 5 ID8812 has a linked chart. Adistar Boost M F32290 exposes its scan source without a size result. The calculator compares the longer foot’s manually entered length in integer millimetres against the chart. Exact matches show one row and measurements between rows show both. Results and measurements stay in ephemeral component state. The guide runs independently of WebGL, account services, and avatar measurements.

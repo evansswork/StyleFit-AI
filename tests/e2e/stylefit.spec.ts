@@ -362,3 +362,40 @@ test("the demo compares a product scan and recovers when the scan fails", async 
   await expect(scan).toHaveAttribute("aria-pressed", "true");
   expect(fetches).toHaveLength(2);
 });
+
+test("footwear sizing works in 2D and withholds a result for a scan without a chart", async ({ page }) => {
+  const assetRequests: string[] = [];
+  page.on("request", request => { if (request.url().endsWith(".glb")) assetRequests.push(request.url()); });
+  await page.goto("/stylist?demo=1");
+  const guide = page.locator("#panduan-ukuran");
+  await guide.getByText("Panduan ukuran sepatu", { exact: true }).press("Enter");
+  await expect(guide).toHaveAttribute("open", "");
+  const input = guide.getByRole("textbox", { name: "Panjang kaki (cm)" });
+  const size = guide.getByRole("button", { name: "Cek ukuran" });
+  await size.click();
+  await expect(input).toHaveAttribute("aria-invalid", "true");
+  await input.fill("25,9");
+  await input.press("Enter");
+  await expect(guide.getByText("EU 42", { exact: true })).toBeVisible();
+  await expect(guide.getByRole("link", { name: "Tabel ukuran Adidas" })).toBeVisible();
+
+  await input.fill("26,1");
+  await expect(guide.getByText("EU 42", { exact: true })).toHaveCount(0);
+  await size.click();
+  await expect(guide.getByText("Di antara dua ukuran", { exact: false })).toBeVisible();
+  await expect(guide.getByText("EU 42 2/3", { exact: true })).toBeVisible();
+  await input.fill("36");
+  await size.click();
+  await expect(guide.getByText(/di luar rentang tabel/)).toBeVisible();
+
+  await guide.getByRole("combobox", { name: "Produk" }).selectOption("F32290");
+  await expect(guide.getByText(/Panduan ukuran belum tersedia/)).toBeVisible();
+  await expect(size).toHaveCount(0);
+  await guide.getByRole("combobox", { name: "Produk" }).selectOption("ID8812");
+  await expect(input).toHaveValue("36");
+  await expect(guide.getByText(/di luar rentang tabel/)).toHaveCount(0);
+  await page.reload();
+  await guide.getByText("Panduan ukuran sepatu", { exact: true }).click();
+  await expect(input).toHaveValue("");
+  expect(assetRequests).toEqual([]);
+});

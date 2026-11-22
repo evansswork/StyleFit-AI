@@ -112,3 +112,9 @@ Local verification passed lint, typecheck, build, 10 budget checks, 17 unit test
 U10 adds a demo comparison between the generic shoe and a physical Adidas Adistar Boost M scan, sourced from Google Scanned Objects (SKU F32290). Chromium desktop and 360/390 px mobile checks covered the visual swap, angle presets, locked footwear, lazy loading, asset failure and retry. WebKit at 390 px also rendered the source views and the full outfit. Local lint, typecheck, build, 27 budget/unit checks, 30 guest browser checks and 4 account checks passed.
 
 The source and optimized model both contain 32,918 triangles. The source exterior bounding box is 304.7 × 112.6 × 123.3 mm and mesh quantization changes the dimensions by less than 0.02 mm. The lazy-loaded GLB is 534 KiB. Visual review compared laces, midsole and heel against the three thumbnails supplied with the original scan. Independent physical comparison, size guidance, and user acceptance remain pending.
+
+## Footwear size guide pilot, November 22, 2026
+
+U12/P07 covers one footwear guide in the stylist demo. Adidas lists Ultraboost 5 ID8812 as true to size. The 28 length/EU/UK entries were compared against the manufacturer's general footwear table. The UI accepts Indonesian decimal commas, shows adjacent sizes for lengths between table rows, and validates out-of-range values. The F32290 comparison exposes its scan source and has no size calculation. Changing inputs clears results. Reloading clears the entered length.
+
+Manual browser checks on macOS used sample values at 1440 px, 360 px and 390 px. Keyboard input, the comparison result and the no-chart view were verified. Actual fit on feet and owner acceptance are pending.

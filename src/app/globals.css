@@ -466,3 +466,14 @@ select { padding-right: 22px; }
   .avatar-reference { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; align-items: center; }
   .avatar-reference p { margin: 0; border: 0; padding: 0; }
 }
+
+.size-guide { padding-bottom: 4px; }
+.size-guide[open] { padding-bottom: 14px; }
+.size-fields { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; margin-top: 8px; }
+.size-fields label { flex: 1 1 150px; margin: 0; }
+.size-sources a { text-decoration: underline; text-underline-offset: 2px; }
+.size-match { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.size-match .fine-print:first-child { margin-top: 0; }
+.size-match ul { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 6px; list-style: none; }
+.size-match li { padding: 4px 8px; border-radius: 5px; background: var(--tint); }
+.size-match li span { margin-inline-start: 6px; font-size: .82rem; }
