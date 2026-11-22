@@ -94,3 +94,9 @@ Lint, type checking, 27 configuration and unit checks, the production build, 15 
 The stylist can display the selected look as a WebGL 2 avatar with original procedural meshes. The viewer supports rotation, zoom, relative height and width, switching combinations, and hiding one outer to reveal the top. Clothing templates are labeled similar. Measurements, drape, exact garment models, physical fit, and multiple winter layers remain open.
 
 Lint, type checking, all 27 configuration and unit checks, and the optimized build passed. All 21 guest Chromium browser runs and four account browser runs passed. Tests compare rendered frames after rotation, changing combinations, and hiding the outer, and verify recovery from both startup failure and context loss. Desktop and 360 px screenshots were visually reviewed. A separate 390 px WebKit run used guest wardrobe entries to verify touch, rendered rotation, and switching to 2D. Physical devices and sustained GPU performance have not been tested.
+
+## Textured portrait template, 22 November 2026
+
+The avatar now loads the credited Infinite human head scan and lets users inspect the same rotating model through a face close-up. The existing drama still is presented as a separate outfit reference. The licensed source and changes to the scan package are recorded in public/avatar/README.md.
+
+Lint, type checking, the production build, 27 configuration and unit checks, 24 guest browser runs, and four account browser runs passed. Browser checks cover face framing and rotation via actual rendered differences, source attribution, the reference image, and 2D recovery when the head asset or WebGL fails. A 390 px WebKit run also verified switching away during asset loading and reopening the portrait. Physical device testing remains open.

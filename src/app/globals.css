@@ -433,3 +433,21 @@ select { padding-right: 22px; }
 .avatar-ranges input { padding: 0; border: 0; accent-color: var(--accent); }
 .avatar-controls .checkbox-label { margin-bottom: 0; }
 .avatar-reset { padding-inline: 0; }
+
+.avatar-workspace { display: grid; gap: 12px; align-items: start; }
+.avatar-reference {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: .8rem;
+}
+.avatar-reference img { width: 100%; height: auto; border-radius: 6px; }
+.avatar-reference figcaption { display: grid; gap: 3px; margin-top: 8px; }
+.avatar-reference strong { color: var(--ink); }
+.avatar-reference p { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+.avatar-reference a { text-decoration: underline; text-underline-offset: 2px; }
+@media (min-width: 1110px) {
+  .avatar-workspace { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); }
+}

@@ -43,7 +43,7 @@ export function createOutfitModel(items: Item[]) {
   const model = new Group();
   const outer = new Group();
   const template = (slot: Item["slot"]) => items.find(item => item.slot === slot);
-  const skin = material("#ad9b88");
+  const skin = material("#ae8a75");
   const top = template("top");
   const bottom = template("bottom");
   const shoes = template("shoes");
@@ -53,8 +53,6 @@ export function createOutfitModel(items: Item[]) {
   const trousers = bottom ? material(bottom.color) : skin;
   const footwear = shoes ? material(shoes.color) : skin;
 
-  ellipsoid(model, skin, [0, 2.85, 0.02], [0.182, 0.248, 0.171]);
-  taper(model, skin, [0, 2.49, 0], [0, 2.76, 0], 0.132, 0.112);
   shell(model, shirtFabric, [[0, 1.54], [0.34, 1.54], [0.35, 1.59], [0.33, 1.91], [0.39, 2.23],
     [0.41, 2.42], [0.37, 2.48], [0.18, 2.55], [0.13, 2.51]], 0.58);
   shell(model, trousers, [[0, 1.3], [0.327, 1.3], [0.346, 1.49], [0.337, 1.65], [0, 1.65]], 0.59);
@@ -103,5 +101,11 @@ export function disposeModel(model: Group) {
       surfaces.add(object.material);
     }
   });
-  surfaces.forEach(surface => surface.dispose());
+  for (const surface of surfaces) {
+    for (const texture of [surface.map, surface.normalMap]) {
+      texture?.dispose();
+      if (texture?.image instanceof ImageBitmap) texture.image.close();
+    }
+    surface.dispose();
+  }
 }
