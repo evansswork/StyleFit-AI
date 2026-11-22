@@ -1,11 +1,12 @@
 import {
-  CanvasTexture, DirectionalLight, HemisphereLight, Mesh,
+  CanvasTexture, DirectionalLight, Group, HemisphereLight, Mesh,
   MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, WebGLRenderer,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import type { Item } from "../styling/engine";
 import { dressModel, disposeModel } from "./outfit-model";
+import { scannedShoe } from "./scanned-shoe";
 
 export type AvatarView = {
   rotation: number;
@@ -13,14 +14,15 @@ export type AvatarView = {
   height: number;
   width: number;
   showOuter: boolean;
-  framing: "outfit" | "face" | "trousers";
+  framing: "outfit" | "face" | "trousers" | "shoes";
 };
 
 export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () => void, signal: AbortSignal) {
   const gl = canvas.getContext("webgl2", { antialias: true, alpha: true });
   if (!gl) throw new Error("WebGL 2 unavailable");
 
-  const { scene: subject } = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync("/avatar/studio-wardrobe.glb");
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const { scene: subject } = await loader.loadAsync("/avatar/studio-wardrobe.glb");
   let renderer: WebGLRenderer;
   try {
     signal.throwIfAborted();
@@ -60,6 +62,9 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
 
   let items: Item[] = [];
   let view: AvatarView | undefined;
+  let shoePair: Group | undefined;
+  let pendingPair: Promise<void> | undefined;
+  let showScannedShoes = false;
   let failed = false;
   let aspect = 1;
   function fail() {
@@ -89,14 +94,16 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
     subject.scale.set(view.width / 100, view.height / 100, view.width / 100);
     const face = view.framing === "face";
     const trousers = view.framing === "trousers";
-    const targetY = (face ? 1.62 : trousers ? 0.58 : 0.90) * subject.scale.y;
+    const shoes = view.framing === "shoes";
+    const targetY = (face ? 1.62 : trousers ? 0.58 : shoes ? 0.135 : 0.90) * subject.scale.y;
     const halfHeight = face ? Math.max(0.211, 0.16 / aspect)
-      : trousers ? Math.max(0.61, 0.30 / aspect) : Math.max(0.98, 0.41 / aspect);
+      : trousers ? Math.max(0.61, 0.30 / aspect)
+      : shoes ? Math.max(0.235, 0.24 / aspect) : Math.max(0.98, 0.41 / aspect);
     camera.left = -halfHeight * aspect;
     camera.right = halfHeight * aspect;
     camera.top = halfHeight;
     camera.bottom = -halfHeight;
-    camera.position.set(0, targetY + (face ? 0 : 0.22), 5);
+    camera.position.set(0, targetY + (face ? 0 : shoes ? 1.35 : 0.22), 5);
     camera.lookAt(0, targetY, 0);
     camera.zoom = view.zoom / 100;
     camera.updateProjectionMatrix();
@@ -111,12 +118,43 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
   return {
     setOutfit(nextItems: Item[]) {
       items = nextItems;
-      dressModel(subject, items, view?.showOuter ?? true);
+      dressModel(subject, items, view?.showOuter ?? true, Boolean(shoePair?.visible));
       applyView();
     },
     setView(next: AvatarView) {
-      if (view?.showOuter !== next.showOuter) dressModel(subject, items, next.showOuter);
+      if (view?.showOuter !== next.showOuter) dressModel(subject, items, next.showOuter, Boolean(shoePair?.visible));
       view = next;
+      applyView();
+    },
+    async setScannedShoes(visible: boolean) {
+      showScannedShoes = visible;
+      if (visible && !shoePair) {
+        pendingPair ??= loader.loadAsync(scannedShoe.model).then(({ scene: scan }) => {
+          if (signal.aborted) {
+            disposeModel(scan);
+            signal.throwIfAborted();
+          }
+          const otherFoot = scan.clone();
+          scan.position.set(-0.112, 0, -0.033);
+          scan.rotation.y = -0.06;
+          otherFoot.position.set(0.109, 0, -0.058);
+          otherFoot.rotation.y = 0.06;
+          // The source contains one shoe. Mirroring supplies the opposite foot.
+          otherFoot.scale.x = -1;
+          shoePair = new Group();
+          shoePair.add(scan, otherFoot);
+          subject.add(shoePair);
+        }).finally(() => { pendingPair = undefined; });
+        try {
+          await pendingPair;
+        } catch (error) {
+          showScannedShoes = false;
+          throw error;
+        }
+      }
+      if (signal.aborted) return;
+      if (shoePair) shoePair.visible = showScannedShoes;
+      dressModel(subject, items, view?.showOuter ?? true, Boolean(shoePair?.visible));
       applyView();
     },
     dispose() {

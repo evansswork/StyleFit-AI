@@ -86,3 +86,5 @@ Use the existing page margins, serif headings, and warm panels. The search accep
 Pada stylist, mode **Avatar 3D** tersedia ketika ada kombinasi atau pilihan demo. Label model serupa muncul di bawah avatar. Kontrol rotasi, zoom, dan proporsi memakai slider berlabel dan bisa dijalankan lewat sentuhan atau keyboard. Jika ada outer, kotak centang menyembunyikan lapisan itu hanya dari preview. Mode 2D bisa dipilih kapan saja dan muncul kembali otomatis jika 3D gagal dimuat.
 
 **Detail wajah** dan **Detail celana** mendekatkan kamera ke bagian yang dipilih. Saat pengguna mencoba satu pakaian contoh, kamera tetap pada sudut yang sama. Foto inspirasi terpisah dari sumber aset avatar.
+
+Di ruang coba demo, **Bandingkan scan sepatu** memperlihatkan tiga tampak sumber. Pemilihan tampak mengarahkan kamera 3D ke detail sepatu. Tombol perbandingan menukar model serupa dengan scan yang bersumber dari satu SKU dan mengikuti kunci sepatu. Jika scan gagal, template tetap tersedia dengan tombol untuk mencoba lagi.

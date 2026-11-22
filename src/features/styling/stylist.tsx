@@ -329,7 +329,7 @@ export function Stylist({ initialDemo, startWithDemo, openStudio, accountsEnable
             >Lihat kombinasi {index + 1}</button>)}
           </div>}
           <div id="outfit-preview" aria-live="polite">
-            {preview.length ? <OutfitPreview items={preview} startIn3D={openStudio && isDemo}>
+            {preview.length ? <OutfitPreview items={preview} startIn3D={openStudio && isDemo} demo={isDemo} shoesLocked={Boolean(locked.shoes)}>
               {isDemo && <details className="studio-picker"><summary>Coba pakaian contoh</summary>
                 {required.map(slot => <fieldset key={slot} disabled={Boolean(locked[slot])}>
                   <legend>{slotNames[slot]}{locked[slot] ? " · Terkunci" : ""}</legend>

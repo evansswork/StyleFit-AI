@@ -106,3 +106,9 @@ Lint, type checking, the production build, 27 configuration and unit checks, 24 
 F08 / U10 now includes a textured portrait, two top silhouettes, two trouser cuts, two footwear shapes and a removable jacket. In the guest studio, picking a demo item changes that piece on the currently displayed outfit. The viewer accepts a horizontal drag and keyboard rotation.
 
 Local verification passed lint, typecheck, build, 10 budget checks, 17 unit tests, 27 guest browser cases and 4 account cases. The guest suite covered Chromium desktop and 360/390 px mobile layouts, including reduced motion at 360 px. It checked visible changes after garment swaps, retention of the camera angle and locked shoes, and recovery after a failed model load. Visual review inspected front, profile and rear views, shirt cuffs and neckline, the portrait and trouser detail. The source index is in public/avatar/README.md. Owner acceptance, physical garment comparison and performance on real phones remain pending.
+
+## Scanned footwear pilot, November 22, 2026
+
+U10 adds a demo comparison between the generic shoe and a physical Adidas Adistar Boost M scan, sourced from Google Scanned Objects (SKU F32290). Chromium desktop and 360/390 px mobile checks covered the visual swap, angle presets, locked footwear, lazy loading, asset failure and retry. WebKit at 390 px also rendered the source views and the full outfit. Local lint, typecheck, build, 27 budget/unit checks, 30 guest browser checks and 4 account checks passed.
+
+The source and optimized model both contain 32,918 triangles. The source exterior bounding box is 304.7 × 112.6 × 123.3 mm and mesh quantization changes the dimensions by less than 0.02 mm. The lazy-loaded GLB is 534 KiB. Visual review compared laces, midsole and heel against the three thumbnails supplied with the original scan. Independent physical comparison, size guidance, and user acceptance remain pending.

@@ -1,7 +1,7 @@
-import { Mesh, MeshStandardMaterial, Texture, type Group } from "three";
+import { Mesh, MeshStandardMaterial, Texture, type BufferGeometry, type Group, type Material } from "three";
 import type { Item } from "../styling/engine";
 
-export function dressModel(model: Group, items: Item[], showOuter: boolean) {
+export function dressModel(model: Group, items: Item[], showOuter: boolean, showScannedShoes = false) {
   const garment = (name: string, item: Item | undefined, visible: boolean) => {
     const mesh = model.getObjectByName(name)?.getObjectByProperty("isMesh", true);
     if (!(mesh instanceof Mesh) || !(mesh.material instanceof MeshStandardMaterial)) {
@@ -31,22 +31,26 @@ export function dressModel(model: Group, items: Item[], showOuter: boolean) {
   garment("Chinos", bottom, !denim);
   const shoes = items.find(item => item.slot === "shoes");
   const trainers = /sneaker|trainer|olahraga/i.test(shoes?.name ?? "");
-  garment("Trainers", shoes, trainers);
-  garment("Shoes", shoes, !trainers);
+  garment("Trainers", shoes, !showScannedShoes && trainers);
+  garment("Shoes", shoes, !showScannedShoes && !trainers);
 }
 
 export function disposeModel(model: Group) {
+  const geometries = new Set<BufferGeometry>();
+  const materials = new Set<Material>();
   const textures = new Set<Texture>();
   model.traverse(node => {
     if (!(node instanceof Mesh)) return;
-    node.geometry.dispose();
-    for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
-      for (const property of Object.values(material)) {
-        if (property instanceof Texture) textures.add(property);
-      }
-      material.dispose();
-    }
+    geometries.add(node.geometry);
+    for (const material of Array.isArray(node.material) ? node.material : [node.material]) materials.add(material);
   });
+  for (const geometry of geometries) geometry.dispose();
+  for (const material of materials) {
+    for (const property of Object.values(material)) {
+      if (property instanceof Texture) textures.add(property);
+    }
+    material.dispose();
+  }
   for (const texture of textures) {
     texture.dispose();
     if (texture.image instanceof ImageBitmap) texture.image.close();

@@ -456,6 +456,12 @@ select { padding-right: 22px; }
 .studio-picker fieldset { border: 0; padding: 0 0 10px; margin: 0; }
 .studio-picker legend { font-size: .84rem; color: var(--muted); margin-bottom: 4px; }
 .studio-picker button { margin: 0 4px 4px 0; }
+.scan-comparison h3 { margin: 0; }
+.scan-comparison p { margin-block: 6px 10px; }
+.scan-comparison a { text-decoration: underline; text-underline-offset: 2px; }
+.scan-views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.scan-views button { margin: 0; padding: 4px; font-size: .75rem; line-height: 1.25; }
+.scan-views img { width: 100%; height: auto; display: block; border-radius: 4px; margin-bottom: 4px; }
 @media (min-width: 1110px) {
   .avatar-reference { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; align-items: center; }
   .avatar-reference p { margin: 0; border: 0; padding: 0; }

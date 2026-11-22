@@ -19,3 +19,9 @@ Garments were split from the source meshes, fitted to one standing pose and give
 The bundled head and its texture maps derive from *Infinite, 3D Head Scan* by Lee Perry-Smith / Infinite Realities. It is distributed under [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/). The [upstream license notice](LeePerrySmith_License.txt) is included.
 
 Source files came from the [Three.js example asset](https://github.com/mrdoob/three.js/tree/4500a366ccfd5a59aa2ed296c386fa42bb4edb8c/examples/models/gltf/LeePerrySmith). StyleFit packages the geometry, color map, and tangent-space normal map in a self-contained GLB, drops the example camera and light, and crops and scales the bust at render time. The drama still in the reference card is a separate asset.
+
+## Scanned product preview
+
+Adidas Adistar Boost M (SKU F32290, GTIN 887383314715), Google Scanned Objects, © 2020 Google LLC. [Original scan, thumbnails and metadata](https://fuel.gazebosim.org/1.0/GoogleResearch/models/adistar_boost_m) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Source archive version 1.
+
+StyleFit converted the original OBJ into a Y-up GLB and reduced the color texture to 2048 px. Mesh coordinates retain their source scale. The exterior bounding box is approximately 304.7 × 112.6 × 123.3 mm in length, width and height. Source thumbnails were cropped and converted to WebP. On the avatar, a reflected copy stands in for the opposite shoe. The exterior dimensions describe the scanned object.

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { OutfitArt } from "@/components/outfit-art";
 import type { Item } from "../styling/engine";
 import type { AvatarView, mountOutfitScene } from "./outfit-scene";
+import { scannedShoe } from "./scanned-shoe";
 
 const initialView: AvatarView = { rotation: 22, zoom: 100, height: 100, width: 100, showOuter: true, framing: "outfit" };
 const ranges = [
@@ -16,10 +17,15 @@ const ranges = [
 
 type PreviewMode = "2d" | "3d" | "fallback";
 
-function AvatarPreview({ items, onModeChange, children }: { items: Item[]; onModeChange: (mode: PreviewMode) => void; children?: ReactNode }) {
+function AvatarPreview({ items, onModeChange, children, demo, shoesLocked }: {
+  items: Item[]; onModeChange: (mode: PreviewMode) => void; children?: ReactNode; demo: boolean; shoesLocked: boolean;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [viewer, setViewer] = useState<Awaited<ReturnType<typeof mountOutfitScene>> | null>(null);
   const [view, setView] = useState(initialView);
+  const [scan, setScan] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const compareShoes = demo && !shoesLocked && (scan === "loading" || scan === "ready");
+  const scanVisible = compareShoes && scan === "ready";
   const drag = useRef<{ id: number; x: number; rotation: number } | null>(null);
   const hasOuter = items.some(item => item.slot === "outer");
 
@@ -49,6 +55,23 @@ function AvatarPreview({ items, onModeChange, children }: { items: Item[]; onMod
 
   useEffect(() => { viewer?.setOutfit(items); }, [viewer, items]);
   useEffect(() => { viewer?.setView(view); }, [viewer, view]);
+  useEffect(() => {
+    if (!viewer) return;
+    let current = true;
+    void viewer.setScannedShoes(compareShoes).then(() => {
+      if (current && compareShoes) setScan("ready");
+    }).catch(() => { if (current && compareShoes) setScan("error"); });
+    return () => { current = false; };
+  }, [compareShoes, viewer]);
+
+  function toggleScan() {
+    if (scanVisible) {
+      setScan("idle");
+      return;
+    }
+    setScan("loading");
+    setView(current => ({ ...current, framing: "shoes", zoom: 100 }));
+  }
 
   return <div className="avatar-preview">
     {viewer && <div className="preview-options" role="group" aria-label="Bingkai avatar">
@@ -58,9 +81,12 @@ function AvatarPreview({ items, onModeChange, children }: { items: Item[]; onMod
         onClick={() => setView({ ...view, framing: "face" })}>Detail wajah</button>
       <button type="button" className="lock-button" aria-pressed={view.framing === "trousers"}
         onClick={() => setView({ ...view, framing: "trousers" })}>Detail celana</button>
+      {demo && <button type="button" className="lock-button" aria-pressed={view.framing === "shoes"}
+        onClick={() => setView({ ...view, framing: "shoes" })}>Detail sepatu</button>}
     </div>}
     <figure>
-      <canvas ref={canvas} role="img" aria-label={`Avatar 3D dengan ${items.map(item => item.name).join(", ")}`}
+      <canvas ref={canvas} role="img" aria-label={`Avatar 3D dengan ${items.map(item =>
+        scanVisible && item.slot === "shoes" ? scannedShoe.name : item.name).join(", ")}`}
         onPointerDown={event => {
           if (!viewer || !event.isPrimary || event.button !== 0) return;
           drag.current = { id: event.pointerId, x: event.clientX, rotation: view.rotation };
@@ -74,8 +100,28 @@ function AvatarPreview({ items, onModeChange, children }: { items: Item[]; onMod
         }}
         onLostPointerCapture={() => { drag.current = null; }} />
       {!viewer && <p className="fine-print" role="status">Memuat avatar 3D…</p>}
-      <figcaption>Model pakaian serupa. Warna mengikuti pilihanmu. Potongan dan bahan memakai template studio.</figcaption>
+      <figcaption>{scanVisible
+        ? `Sepatu memakai scan produk ${scannedShoe.sku}. Pakaian memakai model serupa.`
+        : "Model pakaian serupa. Warna mengikuti pilihanmu. Potongan dan bahan memakai template studio."}</figcaption>
     </figure>
+    {viewer && demo && <details className="studio-picker scan-comparison">
+      <summary>Bandingkan scan sepatu</summary>
+      <h3>{scannedShoe.name}</h3>
+      <p className="fine-print">SKU {scannedShoe.sku} · Dimensi luar sampel {scannedShoe.exterior.length} × {scannedShoe.exterior.width} × {scannedShoe.exterior.height} mm (panjang × lebar × tinggi).</p>
+      <button type="button" className="lock-button" aria-pressed={scanVisible}
+        disabled={shoesLocked || scan === "loading"} onClick={toggleScan}>Tampilkan scan produk</button>
+      {shoesLocked && <p className="fine-print">Lepas kunci sepatu untuk mencoba scan.</p>}
+      {compareShoes && scan === "loading" && <p className="fine-print" role="status">Memuat scan sepatu…</p>}
+      {scan === "error" && <p className="fine-print" role="status">Scan sepatu gagal dimuat. Model serupa masih tampil. Coba muat lagi.</p>}
+      <div className="scan-views" role="group" aria-label="Tampak sumber scan">
+        {scannedShoe.views.map(({ image, label, angle }) => <button key={label} type="button"
+          className="lock-button" aria-pressed={view.framing === "shoes" && view.rotation === angle}
+          onClick={() => setView(current => ({ ...current, framing: "shoes", rotation: angle, zoom: 100 }))}>
+          <Image src={image} alt="" width={360} height={240} unoptimized />{label}
+        </button>)}
+      </div>
+      <p className="fine-print">Google Scanned Objects, © 2020 Google LLC. Tampak sumber dipotong untuk perbandingan. Satu sepatu dicerminkan untuk menampilkan pasangan. <a href={scannedShoe.source}>Sumber scan</a> · <a href={scannedShoe.license}>CC BY 4.0</a></p>
+    </details>}
     {viewer && children}
     {viewer && <div className="avatar-controls">
       <div className="avatar-ranges">
@@ -93,7 +139,9 @@ function AvatarPreview({ items, onModeChange, children }: { items: Item[]; onMod
   </div>;
 }
 
-export function OutfitPreview({ items, startIn3D, children }: { items: Item[]; startIn3D: boolean; children?: ReactNode }) {
+export function OutfitPreview({ items, startIn3D, demo, shoesLocked, children }: {
+  items: Item[]; startIn3D: boolean; demo: boolean; shoesLocked: boolean; children?: ReactNode;
+}) {
   const [mode, setMode] = useState<PreviewMode>(startIn3D ? "3d" : "2d");
   return <>
     <div className="preview-options" role="group" aria-label="Mode preview">
@@ -104,7 +152,7 @@ export function OutfitPreview({ items, startIn3D, children }: { items: Item[]; s
       Preview 3D tidak dapat dimuat. Kamu masih bisa melihat ilustrasi 2D atau mencoba 3D lagi.
     </p>}
     {mode === "2d" ? <OutfitArt items={items} /> : <div className="avatar-workspace">
-      {mode === "3d" ? <AvatarPreview items={items} onModeChange={setMode}>{children}</AvatarPreview> : <OutfitArt items={items} />}
+      {mode === "3d" ? <AvatarPreview key={String(demo)} items={items} onModeChange={setMode} demo={demo} shoesLocked={shoesLocked}>{children}</AvatarPreview> : <OutfitArt items={items} />}
       <aside className="avatar-reference" aria-label="Referensi foto dan sumber avatar">
         <figure>
           <Image src="/demo/sunrise-through-the-rain.png" alt="Dua orang berkemeja putih berbagi earphone"

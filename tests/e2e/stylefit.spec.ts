@@ -312,6 +312,8 @@ test("a studio garment swap keeps the camera and locked pieces", async ({ page }
   await page.getByText("Coba pakaian contoh", { exact: true }).click();
   const picker = page.locator(".studio-picker");
   await expect(picker.getByRole("button", { name: "Loafers hitam" })).toBeDisabled();
+  await page.getByText("Bandingkan scan sepatu", { exact: true }).click();
+  await expect(page.getByRole("button", { name: "Tampilkan scan produk" })).toBeDisabled();
   const before = await avatar.screenshot();
   await picker.getByRole("button", { name: "Kemeja putih" }).press("Enter");
   await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja putih, Jeans indigo, Sneakers putih");
@@ -323,4 +325,40 @@ test("a studio garment swap keeps the camera and locked pieces", async ({ page }
   await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja putih, Celana abu muda, Sneakers putih");
   expect((await avatar.screenshot()).equals(jeans)).toBe(false);
   await expect(picker.getByRole("button", { name: "Celana abu muda" })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("the demo compares a product scan and recovers when the scan fails", async ({ page }) => {
+  const fetches: string[] = [];
+  page.on("request", request => {
+    if (request.url().endsWith("/avatar/adistar/scan.glb")) fetches.push(request.url());
+  });
+  await page.route("**/avatar/adistar/scan.glb", route => route.abort(), { times: 1 });
+  await page.goto("/stylist?demo=1&view=3d");
+  const canvas = page.getByRole("img", { name: /Avatar 3D dengan/ });
+  const rotation = page.getByRole("slider", { name: "Rotasi avatar", exact: true });
+  await page.getByText("Bandingkan scan sepatu", { exact: true }).click();
+  const scan = page.getByRole("button", { name: "Tampilkan scan produk" });
+  const side = page.getByRole("button", { name: "Samping", exact: true });
+  await side.press("Enter");
+  await expect(rotation).toHaveValue("90");
+  await expect(side).toHaveAttribute("aria-pressed", "true");
+  const template = await canvas.screenshot();
+  expect(fetches).toHaveLength(0);
+
+  await scan.click();
+  await expect(page.getByText(/Scan sepatu gagal dimuat/)).toBeVisible();
+  await expect(canvas).toHaveAccessibleName(/Sneakers putih/);
+  await scan.click();
+  await expect(scan).toHaveAttribute("aria-pressed", "true");
+  await expect(canvas).toHaveAccessibleName("Avatar 3D dengan Kaus putih, Jeans indigo, Adidas Adistar Boost M");
+  expect((await canvas.screenshot()).equals(template)).toBe(false);
+  await expect(page.getByText(/Sepatu memakai scan produk F32290/)).toBeVisible();
+  await page.getByRole("button", { name: "Tumit", exact: true }).click();
+  await expect(rotation).toHaveValue("180");
+
+  await scan.click();
+  await expect(canvas).toHaveAccessibleName(/Sneakers putih/);
+  await scan.click();
+  await expect(scan).toHaveAttribute("aria-pressed", "true");
+  expect(fetches).toHaveLength(2);
 });
