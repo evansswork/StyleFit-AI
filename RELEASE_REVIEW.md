@@ -100,3 +100,9 @@ Lint, type checking, all 27 configuration and unit checks, and the optimized bui
 The avatar now loads the credited Infinite human head scan and lets users inspect the same rotating model through a face close-up. The existing drama still is presented as a separate outfit reference. The licensed source and changes to the scan package are recorded in public/avatar/README.md.
 
 Lint, type checking, the production build, 27 configuration and unit checks, 24 guest browser runs, and four account browser runs passed. Browser checks cover face framing and rotation via actual rendered differences, source attribution, the reference image, and 2D recovery when the head asset or WebGL fails. A 390 px WebKit run also verified switching away during asset loading and reopening the portrait. Physical device testing remains open.
+
+## Studio wardrobe preview, November 22, 2026
+
+F08 / U10 now includes a textured portrait, two top silhouettes, two trouser cuts, two footwear shapes and a removable jacket. In the guest studio, picking a demo item changes that piece on the currently displayed outfit. The viewer accepts a horizontal drag and keyboard rotation.
+
+Local verification passed lint, typecheck, build, 10 budget checks, 17 unit tests, 27 guest browser cases and 4 account cases. The guest suite covered Chromium desktop and 360/390 px mobile layouts, including reduced motion at 360 px. It checked visible changes after garment swaps, retention of the camera angle and locked shoes, and recovery after a failed model load. Visual review inspected front, profile and rear views, shirt cuffs and neckline, the portrait and trouser detail. The source index is in public/avatar/README.md. Owner acceptance, physical garment comparison and performance on real phones remain pending.

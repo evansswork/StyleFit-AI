@@ -1,10 +1,11 @@
 import {
-  Color, CylinderGeometry, DirectionalLight, Group, HemisphereLight, Mesh,
-  MeshStandardMaterial, OrthographicCamera, Plane, Scene, Vector3, WebGLRenderer,
+  CanvasTexture, DirectionalLight, HemisphereLight, Mesh,
+  MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, WebGLRenderer,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import type { Item } from "../styling/engine";
-import { createOutfitModel, disposeModel } from "./outfit-model";
+import { dressModel, disposeModel } from "./outfit-model";
 
 export type AvatarView = {
   rotation: number;
@@ -12,53 +13,52 @@ export type AvatarView = {
   height: number;
   width: number;
   showOuter: boolean;
-  framing: "outfit" | "face";
+  framing: "outfit" | "face" | "trousers";
 };
 
 export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () => void, signal: AbortSignal) {
-  const gl = canvas.getContext("webgl2", { antialias: true });
+  const gl = canvas.getContext("webgl2", { antialias: true, alpha: true });
   if (!gl) throw new Error("WebGL 2 unavailable");
 
-  const { scene: head } = await new GLTFLoader().loadAsync("/avatar/infinite-head.glb");
+  const { scene: subject } = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync("/avatar/studio-wardrobe.glb");
   let renderer: WebGLRenderer;
   try {
     signal.throwIfAborted();
+    dressModel(subject, [], false);
     if (gl.isContextLost()) throw new Error("WebGL context lost during avatar loading");
-    renderer = new WebGLRenderer({ canvas, context: gl });
+    renderer = new WebGLRenderer({ canvas, context: gl, alpha: true });
   } catch (error) {
-    disposeModel(head);
+    disposeModel(subject);
     throw error;
   }
-  renderer.localClippingEnabled = true;
-  // The published bust includes shoulders; start the portrait at the neckline of our clothes.
-  const neckline = 2.52;
-  const headCrop = new Plane(new Vector3(0, 1, 0), -neckline);
-  head.traverse(node => {
-    if (node instanceof Mesh) node.material.clippingPlanes = [headCrop];
-  });
-  head.scale.setScalar(0.108);
-  head.position.set(0.008, neckline + 1.18 * head.scale.y, -0.024);
-  const subject = new Group();
-  subject.add(head);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   const scene = new Scene();
-  scene.background = new Color("#eaf1f5");
+  renderer.setClearColor(0, 0);
   scene.add(subject);
-  const camera = new OrthographicCamera(-2, 2, 2, -2, 0.1, 30);
+  const camera = new OrthographicCamera(-2, 2, 2, -2, 0.01, 20);
 
-  scene.add(new HemisphereLight("#f5f9ff", "#71685c", 2.0));
-  const key = new DirectionalLight("#fff0d5", 2.3);
-  key.position.set(3, 7, 5);
+  scene.add(new HemisphereLight("#fffaf2", "#e1d9ce", 1.65));
+  const key = new DirectionalLight("#fff5e9", 1.85);
+  key.position.set(-3, 5, 4);
   scene.add(key);
-  const fill = new DirectionalLight("#c9e4fc", 1.35);
-  fill.position.set(-4, 4, -3);
-  scene.add(fill);
-  const base = new Mesh(new CylinderGeometry(1.12, 1.12, 0.075, 48),
-    new MeshStandardMaterial({ color: "#cad9e2", roughness: 0.85 }));
-  base.position.y = 0.005;
-  scene.add(base);
+  const rim = new DirectionalLight("#dcebf8", 1.35);
+  rim.position.set(3, 3, -4);
+  scene.add(rim);
 
-  let outfit: ReturnType<typeof createOutfitModel> | undefined;
+  const shadowMap = document.createElement("canvas");
+  shadowMap.width = shadowMap.height = 128;
+  const ctx = shadowMap.getContext("2d")!;
+  const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gradient.addColorStop(0, "rgba(48, 43, 38, 0.32)");
+  gradient.addColorStop(1, "rgba(48, 43, 38, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 128, 128);
+  const shadow = new Mesh(new PlaneGeometry(0.82, 0.55),
+    new MeshBasicMaterial({ map: new CanvasTexture(shadowMap), transparent: true, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2;
+  subject.add(shadow);
+
+  let items: Item[] = [];
   let view: AvatarView | undefined;
   let failed = false;
   let aspect = 1;
@@ -68,7 +68,7 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
     onError();
   }
   function render() {
-    if (!outfit || !view || failed) return;
+    if (!view || failed) return;
     try {
       renderer.render(scene, camera);
     } catch {
@@ -83,19 +83,20 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
     applyView();
   }
   function applyView() {
-    if (!outfit || !view || failed) return;
-    const closeUp = view.framing === "face";
+    if (!view || failed) return;
+
     subject.rotation.y = view.rotation * Math.PI / 180;
     subject.scale.set(view.width / 100, view.height / 100, view.width / 100);
-    headCrop.constant = -neckline * subject.scale.y;
-    outfit.outer.visible = view.showOuter;
-    const targetY = closeUp ? 2.82 * subject.scale.y : 1.61;
-    const halfHeight = closeUp ? Math.max(0.40, 0.34 / aspect) : Math.max(1.91, 1.4 / aspect);
+    const face = view.framing === "face";
+    const trousers = view.framing === "trousers";
+    const targetY = (face ? 1.62 : trousers ? 0.58 : 0.90) * subject.scale.y;
+    const halfHeight = face ? Math.max(0.211, 0.16 / aspect)
+      : trousers ? Math.max(0.61, 0.30 / aspect) : Math.max(0.98, 0.41 / aspect);
     camera.left = -halfHeight * aspect;
     camera.right = halfHeight * aspect;
     camera.top = halfHeight;
     camera.bottom = -halfHeight;
-    camera.position.set(0, targetY + (closeUp ? 0.05 : 0.52), 7);
+    camera.position.set(0, targetY + (face ? 0 : 0.22), 5);
     camera.lookAt(0, targetY, 0);
     camera.zoom = view.zoom / 100;
     camera.updateProjectionMatrix();
@@ -108,27 +109,20 @@ export async function mountOutfitScene(canvas: HTMLCanvasElement, onError: () =>
   resize();
 
   return {
-    setOutfit(items: Item[]) {
-      if (failed) return;
-      if (outfit) {
-        subject.remove(outfit.model);
-        disposeModel(outfit.model);
-      }
-      outfit = createOutfitModel(items);
-      subject.add(outfit.model);
+    setOutfit(nextItems: Item[]) {
+      items = nextItems;
+      dressModel(subject, items, view?.showOuter ?? true);
       applyView();
     },
     setView(next: AvatarView) {
+      if (view?.showOuter !== next.showOuter) dressModel(subject, items, next.showOuter);
       view = next;
       applyView();
     },
     dispose() {
       observer.disconnect();
       canvas.removeEventListener("webglcontextlost", fail);
-      if (outfit) disposeModel(outfit.model);
-      disposeModel(head);
-      base.geometry.dispose();
-      base.material.dispose();
+      disposeModel(subject);
       renderer.dispose();
       renderer.forceContextLoss();
     },

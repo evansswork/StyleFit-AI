@@ -245,10 +245,12 @@ test("3D renders the chosen outfit and supports rotation, zoom, proportions, and
   await expect(height).toHaveValue("100");
   await expect(width).toHaveValue("100");
   await expect(outer).toBeChecked();
-  const reference = page.getByRole("complementary", { name: "Referensi foto dan sumber wajah" });
+  const reference = page.getByRole("complementary", { name: "Referensi foto dan sumber avatar" });
   await expect(reference.getByRole("img")).toHaveAttribute("src", "/demo/sunrise-through-the-rain.png");
-  await expect(reference.getByRole("link", { name: "CC BY 3.0" })).toBeVisible();
+  await expect(reference.getByRole("link", { name: "CC0" })).toBeVisible();
   const outfitFrame = await avatar.screenshot();
+  await page.getByRole("button", { name: "Detail celana" }).press("Enter");
+  expect((await avatar.screenshot()).equals(outfitFrame)).toBe(false);
   const face = page.getByRole("button", { name: "Detail wajah", exact: true });
   await face.press("Enter");
   await expect(face).toHaveAttribute("aria-pressed", "true");
@@ -283,11 +285,42 @@ test("no WebGL keeps the outfit and its 2D preview available", async ({ page }) 
   await expect(page.getByRole("article", { name: "Kombinasi 1", exact: true })).toBeVisible();
 });
 
-test("a missing head asset preserves the photo and the 2D outfit", async ({ page }) => {
-  await page.route("**/avatar/infinite-head.glb", route => route.abort());
+test("a missing studio asset preserves the photo and the 2D outfit", async ({ page }) => {
+  await page.route("**/avatar/studio-wardrobe.glb", route => route.abort());
   await page.goto("/stylist?demo=1");
   await page.getByRole("button", { name: "Avatar 3D", exact: true }).click();
   await expect(page.getByText(/Preview 3D tidak dapat dimuat/)).toBeVisible();
   await expect(page.getByRole("img", { name: "Ilustrasi Kaus putih" })).toBeVisible();
-  await expect(page.getByRole("complementary", { name: "Referensi foto dan sumber wajah" }).getByRole("img")).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Referensi foto dan sumber avatar" }).getByRole("img")).toBeVisible();
+});
+
+test("a studio garment swap keeps the camera and locked pieces", async ({ page }) => {
+  await page.goto("/stylist?demo=1&view=3d&locked=shoes");
+  const avatar = page.getByRole("img", { name: /Avatar 3D dengan/ });
+  const rotation = page.getByRole("slider", { name: "Rotasi avatar", exact: true });
+  await expect(rotation).toHaveValue("22");
+  await avatar.scrollIntoViewIfNeeded();
+  const box = await avatar.boundingBox();
+  if (!box) throw new Error("Studio canvas unavailable");
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2);
+  await page.mouse.up();
+  await expect(rotation).not.toHaveValue("22");
+  await rotation.press("PageUp");
+  const angle = await rotation.inputValue();
+  await page.getByText("Coba pakaian contoh", { exact: true }).click();
+  const picker = page.locator(".studio-picker");
+  await expect(picker.getByRole("button", { name: "Loafers hitam" })).toBeDisabled();
+  const before = await avatar.screenshot();
+  await picker.getByRole("button", { name: "Kemeja putih" }).press("Enter");
+  await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja putih, Jeans indigo, Sneakers putih");
+  expect((await avatar.screenshot()).equals(before)).toBe(false);
+  await expect(rotation).toHaveValue(angle);
+  await page.getByRole("button", { name: "Detail celana" }).click();
+  const jeans = await avatar.screenshot();
+  await picker.getByRole("button", { name: "Celana abu muda" }).click();
+  await expect(avatar).toHaveAccessibleName("Avatar 3D dengan Kemeja putih, Celana abu muda, Sneakers putih");
+  expect((await avatar.screenshot()).equals(jeans)).toBe(false);
+  await expect(picker.getByRole("button", { name: "Celana abu muda" })).toHaveAttribute("aria-pressed", "true");
 });

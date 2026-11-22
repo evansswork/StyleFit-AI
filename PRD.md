@@ -35,6 +35,8 @@ Identifier F01 sampai F15 mempertahankan konsep versi 1.0. F00 adalah kebutuhan 
 
 Draft guest pada tahap awal disimpan di memori browser selama navigasi aplikasi, tanpa penyimpanan permanen foto atau profil. UI menjelaskan bahwa muat ulang atau menutup tab dapat menghilangkan draft dan menjelaskan apakah akun untuk menyimpan sudah tersedia. Pada build guest awal, akun belum tersedia; jangan menampilkan tombol login yang tidak berfungsi. Pemindahan ke akun dilakukan setelah pilihan pengguna dan tidak menggandakan item saat diulang.
 
+Target visual F08 adalah wajah, bahan, dan siluet yang bisa diperiksa dari depan, samping, serta belakang. Pada koleksi contoh, pengguna bisa mengganti satu item sambil mempertahankan sudut kamera dan item terkunci. Sebelum suatu aset diberi label model produk spesifik, bandingkan potongan, panjang, detail, dan materialnya dengan foto serta ukuran produk yang sama.
+
 Rekonstruksi otomatis pakaian 3D dari sembarang gambar tetap berada pada jalur riset F08. Pemetaan gambar ke template tidak diklaim sebagai rekonstruksi persis. Fitur tahap lanjut tetap masuk visi walaupun belum tersedia pada rilis awal.
 
 ## F00 Landing page yang dapat dicoba

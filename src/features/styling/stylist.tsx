@@ -19,9 +19,10 @@ const emptyDraft: Draft = { name: "", slot: null, color: colors.putih, style: "b
 const auth = createAuthClient();
 type SavedWardrobe = { id: string; name: string; items: Item[] };
 
-export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, accountUnavailable, inspiration }: {
+export function Stylist({ initialDemo, startWithDemo, openStudio, accountsEnabled, account, accountUnavailable, inspiration }: {
   initialDemo: DemoState;
   startWithDemo: boolean;
+  openStudio: boolean;
   accountsEnabled: boolean;
   account: SavedWardrobe | null;
   accountUnavailable: boolean;
@@ -115,6 +116,13 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
       setSelected(result.state.selected);
     }
     setStyle(nextStyle); setWeather(nextWeather); invalidate();
+  }
+  function tryDemoItem(item: Item, base: Item[]) {
+    if (locked[item.slot] || !fitsContext(item, style, weather)) return;
+    const next: Selection = Object.fromEntries(base.map(current => [current.slot, current.id]));
+    setSelected({ ...next, [item.slot]: item.id });
+    invalidate();
+    setMessage(`${item.name} dipakai pada preview.`);
   }
   function switchCollection() {
     if (!isDemo) setSelected(preset(style, weather));
@@ -297,7 +305,7 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
           <ul className="wardrobe-list" aria-label={isDemo ? "Pakaian contoh" : "Pakaian di lemari"}>{visibleItems.map(item => <li key={item.id}>
             <div className="item-description"><span className="color-swatch" style={{ backgroundColor: item.color }} /><span><strong>{item.name}</strong><small>{slotNames[item.slot]} · {isDemo ? "Contoh" : "Milikmu"}</small></span></div>
             <div className="item-actions">
-              {isDemo ? <label className="sr-only-label">Ganti {slotNames[item.slot].toLowerCase()}<select disabled={Boolean(locked[item.slot])} value={selected[item.slot]} onChange={event => { setSelected({ ...selected, [item.slot]: event.target.value }); invalidate(); setMessage(`${slotNames[item.slot]} diganti; bagian lain tetap.`); }}>{demoItems.filter(option => option.slot === item.slot && option.styles.includes(style) && option.weather.includes(weather)).map(option => <option value={option.id} key={option.id}>{option.name}</option>)}</select></label> : <button type="button" className="text-button" disabled={pending} aria-label={`Edit ${item.name}`} onClick={() => editItem(item)}>Edit</button>}
+              {isDemo ? <label className="sr-only-label">Ganti {slotNames[item.slot].toLowerCase()}<select disabled={Boolean(locked[item.slot])} value={selected[item.slot]} onChange={event => { const choice = demoItems.find(option => option.id === event.target.value); if (choice) tryDemoItem(choice, visibleItems); }}>{demoItems.filter(option => option.slot === item.slot && option.styles.includes(style) && option.weather.includes(weather)).map(option => <option value={option.id} key={option.id}>{option.name}</option>)}</select></label> : <button type="button" className="text-button" disabled={pending} aria-label={`Edit ${item.name}`} onClick={() => editItem(item)}>Edit</button>}
               <button type="button" className="lock-button" aria-label={`Pertahankan ${item.name}`} aria-pressed={locked[item.slot] === item.id} onClick={() => toggleLock(item)}>{locked[item.slot] === item.id ? "Terkunci" : "Kunci"}</button>
               {!isDemo && <button type="button" className="text-button" disabled={pending} aria-label={`Hapus ${item.name}`} onClick={() => removeItem(item)}>Hapus</button>}
             </div>
@@ -321,7 +329,18 @@ export function Stylist({ initialDemo, startWithDemo, accountsEnabled, account, 
             >Lihat kombinasi {index + 1}</button>)}
           </div>}
           <div id="outfit-preview" aria-live="polite">
-            {preview.length ? <OutfitPreview items={preview} /> : <figure className="empty-preview photo-entrance">
+            {preview.length ? <OutfitPreview items={preview} startIn3D={openStudio && isDemo}>
+              {isDemo && <details className="studio-picker"><summary>Coba pakaian contoh</summary>
+                {required.map(slot => <fieldset key={slot} disabled={Boolean(locked[slot])}>
+                  <legend>{slotNames[slot]}{locked[slot] ? " · Terkunci" : ""}</legend>
+                  {demoItems.filter(item => item.slot === slot && fitsContext(item, style, weather)).map(item =>
+                    <button key={item.id} type="button" className="lock-button"
+                      aria-pressed={preview.some(current => current.id === item.id)} onClick={() => tryDemoItem(item, preview)}>
+                      {item.name}
+                    </button>)}
+                </fieldset>)}
+              </details>}
+            </OutfitPreview> : <figure className="empty-preview photo-entrance">
               <Image src="/demo/sunrise-through-the-rain.png" alt="Dua orang berkemeja putih berbagi earphone" width={640} height={360} unoptimized />
               <figcaption>Sunrise Through the Rain Concept Idea</figcaption>
             </figure>}

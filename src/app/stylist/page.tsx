@@ -47,8 +47,8 @@ export default async function StylistPage({ searchParams }: {
   }
   return <><SiteHeader /><main id="main" className="shell stylist-page">
     {inspirationSlug && !inspiration && <p className="privacy-note">Inspirasi ini belum tersedia. <Link href="/inspirasi" className="inline-link">Lihat inspirasi lain</Link></p>}
-    <Stylist key={`${account?.id ?? "guest"}:${inspiration?.slug ?? ""}:${startWithDemo}`} initialDemo={initialDemo} startWithDemo={startWithDemo}
-      inspiration={inspiration}
+    <Stylist key={`${account?.id ?? "guest"}:${inspiration?.slug ?? ""}:${startWithDemo}:${query.view === "3d"}`} initialDemo={initialDemo} startWithDemo={startWithDemo}
+      openStudio={startWithDemo && query.view === "3d"} inspiration={inspiration}
       accountsEnabled={accountsEnabled} account={account} accountUnavailable={accountUnavailable} />
   </main></>;
 }
